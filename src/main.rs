@@ -78,6 +78,7 @@ impl ProgramStack {
 	fn exec_mut(&mut self, token: Token) {
 		exec(self, token);
 	}
+	#[allow(dead_code)] // it is for tests
 	fn exec_val(mut self, token: Token) -> Self {
 		exec(&mut self, token);
 		self
