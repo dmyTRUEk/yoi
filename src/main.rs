@@ -153,6 +153,7 @@ enum Token {
 	// Map,
 	Max,
 	Min,
+	Multiply,
 	Negate,
 	// TODO: range: to/from? (aka ascending/descending)
 	Range0Excluding,
@@ -203,6 +204,7 @@ impl From<&str> for Token {
 				// "map" => Map,
 				"max" => Max,
 				"min" => Min,
+				"mul" => Multiply,
 				"neg" => Negate,
 				"range0excl" => Range0Excluding,
 				"range0incl" => Range0Including,
@@ -464,6 +466,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			match top {
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().min().unwrap()));
+				}
+				_ => panic!()
+			}
+		}
+		Multiply => {
+			let a = program_stack.stack.pop().unwrap();
+			let b = program_stack.stack.last_mut().unwrap();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					*b *= a;
+				}
+				(Int(n), ArrInt(v)) => {
+					for el in v {
+						*el *= n;
+					}
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					for (a, b) in a.iter().zip(b) {
+						*b *= a;
+					}
 				}
 				_ => panic!()
 			}
@@ -973,6 +997,30 @@ mod program_exec {
 				assert_eq!(
 					eval("1"),
 					eval("1,2,3 min")
+				)
+			}
+		}
+		mod multiply {
+			use super::*;
+			#[test]
+			fn _3_4() {
+				assert_eq!(
+					eval("12"),
+					eval("3 4 mul")
+				)
+			}
+			#[test]
+			fn _1_2_3__10() {
+				assert_eq!(
+					eval("10,20,30"),
+					eval("1,2,3 10 mul")
+				)
+			}
+			#[test]
+			fn _1_2_3__4_5_6() {
+				assert_eq!(
+					eval("4,10,18"),
+					eval("1,2,3 4,5,6 mul")
 				)
 			}
 		}
