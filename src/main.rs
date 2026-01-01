@@ -134,6 +134,7 @@ enum Token {
 	Literal(StackElement),
 
 	AtIndex,
+	Digits,
 	Duplicate,
 	First,
 	IndexOfMaxFirst,
@@ -158,6 +159,7 @@ impl From<&str> for Token {
 		// dbg!(token_str);
 		match token_str {
 			"at" => AtIndex,
+			"digits" => Digits,
 			"dup" => Duplicate,
 			"first" => First,
 			"imaxf" => IndexOfMaxFirst,
@@ -195,6 +197,22 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					program_stack.stack.push(Int(v[i as usize]));
 				}
 				_ => panic!(),
+			}
+		}
+		Digits => {
+			let i = program_stack.stack.pop().unwrap();
+			match i {
+				Int(mut i) => {
+					assert!(i >= 0);
+					let mut digits = vec![];
+					while i > 0 {
+						digits.push(i % 10);
+						i /= 10;
+					}
+					digits.reverse();
+					program_stack.stack.push(ArrInt(digits));
+				}
+				_ => panic!()
 			}
 		}
 		Duplicate => {
@@ -422,6 +440,16 @@ mod program_exec {
 				assert_eq!(
 					eval("30"),
 					eval("10,20,30 2 at")
+				)
+			}
+		}
+		mod digits {
+			use super::*;
+			#[test]
+			fn _31415() {
+				assert_eq!(
+					eval("3,1,4,1,5"),
+					eval("31415 digits")
 				)
 			}
 		}
