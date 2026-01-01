@@ -122,7 +122,7 @@ impl From<&str> for StackElement {
 			)
 		}
 		else {
-			todo!()
+			unimplemented!()
 		}
 	}
 }
