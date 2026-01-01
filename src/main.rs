@@ -142,6 +142,9 @@ enum Token {
 	Min,
 	Reverse,
 	Sort,
+	Swap,
+	// SwapN - swap with top with nth / n from top
+	// SwapNM
 }
 impl Token {
 }
@@ -160,6 +163,7 @@ impl From<&str> for Token {
 			"min" => Min,
 			"rev" => Reverse,
 			"sort" => Sort,
+			"swap" => Swap,
 			_ => Literal(StackElement::from(token_str))
 		}
 	}
@@ -304,6 +308,10 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					v.sort();
 				}
 			}
+		}
+		Swap => {
+			let len = program_stack.stack.len();
+			program_stack.stack.swap(len - 1, len - 2);
 		}
 	}
 }
@@ -510,6 +518,37 @@ mod program_exec {
 				assert_eq!(
 					eval("0,1,2,3,4,5,6,7,8,9"),
 					eval("5,9,1,3,4,0,8,7,2,6 sort")
+				)
+			}
+		}
+		mod swap {
+			use super::*;
+			#[test]
+			fn int_int() {
+				assert_eq!(
+					eval("2 1"),
+					eval("1 2 swap")
+				)
+			}
+			#[test]
+			fn vi_vi() {
+				assert_eq!(
+					eval("3,4 1,2"),
+					eval("1,2 3,4 swap")
+				)
+			}
+			#[test]
+			fn vi_int() {
+				assert_eq!(
+					eval("3 1,2"),
+					eval("1,2 3 swap")
+				)
+			}
+			#[test]
+			fn int_vi() {
+				assert_eq!(
+					eval("2,3 1"),
+					eval("1 2,3 swap")
 				)
 			}
 		}
