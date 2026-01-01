@@ -133,6 +133,7 @@ enum Token {
 	Literal(StackElement),
 
 	Duplicate,
+	First,
 	IndexOfMaxFirst,
 	IndexOfMaxLast,
 	IndexOfMinFirst,
@@ -140,6 +141,7 @@ enum Token {
 	Join,
 	Max,
 	Min,
+	Last,
 	Reverse,
 	Sort,
 	Swap,
@@ -154,11 +156,13 @@ impl From<&str> for Token {
 		// dbg!(token_str);
 		match token_str {
 			"dup" => Duplicate,
+			"first" => First,
 			"imaxf" => IndexOfMaxFirst,
 			"imaxl" => IndexOfMaxLast,
 			"iminf" => IndexOfMinFirst,
 			"iminl" => IndexOfMinLast,
 			"join" => Join,
+			"last" => Last,
 			"max" => Max,
 			"min" => Min,
 			"rev" => Reverse,
@@ -182,6 +186,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		}
 		Duplicate => {
 			program_stack.stack.push(program_stack.stack.last().unwrap().clone());
+		}
+		First => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				Int(_) => panic!(),
+				ArrInt(v) => {
+					program_stack.stack.push(Int(*v.first().unwrap()));
+				}
+			}
 		}
 		IndexOfMaxFirst => {
 			let top = program_stack.stack.pop().unwrap();
@@ -291,6 +304,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				}
 			}
 		}
+		Last => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				Int(_) => panic!(),
+				ArrInt(v) => {
+					program_stack.stack.push(Int(*v.last().unwrap()));
+				}
+			}
+		}
 		Reverse => {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
@@ -379,6 +401,16 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3 1,2,3"),
 					eval("1,2,3 dup")
+				)
+			}
+		}
+		mod first {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("1"),
+					eval("1,2,3 first")
 				)
 			}
 		}
@@ -478,6 +510,16 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3"),
 					eval("1 2,3 join")
+				)
+			}
+		}
+		mod last {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("3"),
+					eval("1,2,3 last")
 				)
 			}
 		}
