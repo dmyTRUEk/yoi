@@ -184,6 +184,7 @@ enum Token {
 	// SwapN - swap with top with nth / n from top
 	// SwapNM
 	Tail, // everything but first
+	ToBottom,
 }
 impl Token {
 }
@@ -237,6 +238,7 @@ impl From<&str> for Token {
 				"swap" => Swap,
 				"swapunder" => SwapUnder,
 				"tail" => Tail,
+				"tobottom" => ToBottom,
 				_ => Literal(StackElement::from(token_str))
 			}
 		}
@@ -772,6 +774,10 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				}
 				_ => panic!()
 			}
+		}
+		ToBottom => {
+			let top = program_stack.stack.pop().unwrap();
+			program_stack.stack.insert(0, top);
 		}
 	}
 }
@@ -1511,6 +1517,16 @@ mod program_exec {
 				assert_eq!(
 					eval("5,6,7"),
 					eval("4,5,6,7 tail")
+				)
+			}
+		}
+		mod to_bottom {
+			use super::*;
+			#[test]
+			fn _1__2__3() {
+				assert_eq!(
+					eval("3 1 2"),
+					eval("1 2 3 tobottom")
 				)
 			}
 		}
