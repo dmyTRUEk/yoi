@@ -43,6 +43,7 @@ fn main() {
 
 	let program_stack = eval(&program.join(" "));
 
+	eprintln!();
 	println!("{:?}", program_stack.stack); // TODO
 }
 
