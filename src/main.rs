@@ -142,6 +142,7 @@ enum Token {
 	AtIndex,
 	Decrease,
 	Digits,
+	DivideInt,
 	Duplicate,
 	First,
 	Increase,
@@ -195,6 +196,7 @@ impl From<&str> for Token {
 				"at" => AtIndex,
 				"dec" => Decrease,
 				"digits" => Digits,
+				"divint" => DivideInt,
 				"dup" => Duplicate,
 				"first" => First,
 				"imaxf" => IndexOfMaxFirst,
@@ -314,6 +316,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					}
 					digits.reverse();
 					program_stack.stack.push(ArrInt(digits));
+				}
+				_ => panic!()
+			}
+		}
+		DivideInt => {
+			let a = program_stack.stack.pop().unwrap();
+			let b = program_stack.stack.last_mut().unwrap();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					*b /= a;
+				}
+				(Int(n), ArrInt(v)) => {
+					for el in v {
+						*el /= n;
+					}
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					for (a, b) in a.iter().zip(b) {
+						*b /= a;
+					}
 				}
 				_ => panic!()
 			}
@@ -861,6 +885,37 @@ mod program_exec {
 				assert_eq!(
 					eval("3,1,4,1,5"),
 					eval("31415 digits")
+				)
+			}
+		}
+		mod divide_int {
+			use super::*;
+			#[test]
+			fn _42__10() {
+				assert_eq!(
+					eval("4"),
+					eval("42 10 divint")
+				)
+			}
+			#[test]
+			fn _47__10() {
+				assert_eq!(
+					eval("4"),
+					eval("47 10 divint")
+				)
+			}
+			#[test]
+			fn _10_20_30__2() {
+				assert_eq!(
+					eval("5,10,15"),
+					eval("10,20,30 2 divint")
+				)
+			}
+			#[test]
+			fn _10_20_30__2_4_5() {
+				assert_eq!(
+					eval("5,5,6"),
+					eval("10,20,30 2,4,5 divint")
 				)
 			}
 		}
