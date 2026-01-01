@@ -128,6 +128,7 @@ impl From<&str> for StackElement {
 
 
 
+#[repr(u8)]
 enum Token {
 	Literal(StackElement),
 
