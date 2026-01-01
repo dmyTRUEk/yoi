@@ -152,6 +152,10 @@ enum Token {
 	Min,
 	Negate,
 	Reverse,
+	SliceExcludingFrom,
+	SliceExcludingTo,
+	SliceIncludingFrom,
+	SliceIncludingTo,
 	Sort,
 	Swap,
 	// SwapN - swap with top with nth / n from top
@@ -184,6 +188,10 @@ impl From<&str> for Token {
 				"min" => Min,
 				"neg" => Negate,
 				"rev" => Reverse,
+				"sliceexclfrom" => SliceExcludingFrom,
+				"sliceexclto" => SliceExcludingTo,
+				"sliceinclfrom" => SliceIncludingFrom,
+				"sliceinclto" => SliceIncludingTo,
 				"sort" => Sort,
 				"swap" => Swap,
 				_ => Literal(StackElement::from(token_str))
@@ -413,6 +421,46 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			match top {
 				ArrInt(v) => {
 					v.reverse();
+				}
+				_ => panic!(),
+			}
+		}
+		SliceExcludingFrom => {
+			let i = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[i as usize + 1 ..].to_vec()));
+				}
+				_ => panic!(),
+			}
+		}
+		SliceExcludingTo => {
+			let i = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[.. i as usize].to_vec()));
+				}
+				_ => panic!(),
+			}
+		}
+		SliceIncludingFrom => {
+			let i = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[i as usize ..].to_vec()));
+				}
+				_ => panic!(),
+			}
+		}
+		SliceIncludingTo => {
+			let i = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[..= i as usize].to_vec()));
 				}
 				_ => panic!(),
 			}
@@ -741,6 +789,55 @@ mod program_exec {
 					eval("3,2,1"),
 					eval("1,2,3 rev")
 				)
+			}
+		}
+		mod slice {
+			use super::*;
+			mod excluding {
+				use super::*;
+				mod from {
+					use super::*;
+					#[test]
+					fn _0_1_2_3_4_5_6_7_8_9() {
+						assert_eq!(
+							eval("4,5,6,7,8,9"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 sliceexclfrom")
+						)
+					}
+				}
+				mod to {
+					use super::*;
+					#[test]
+					fn _0_1_2_3_4_5_6_7_8_9() {
+						assert_eq!(
+							eval("0,1,2"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 sliceexclto")
+						)
+					}
+				}
+			}
+			mod including {
+				use super::*;
+				mod from {
+					use super::*;
+					#[test]
+					fn _0_1_2_3_4_5_6_7_8_9() {
+						assert_eq!(
+							eval("3,4,5,6,7,8,9"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 sliceinclfrom")
+						)
+					}
+				}
+				mod to {
+					use super::*;
+					#[test]
+					fn _0_1_2_3_4_5_6_7_8_9() {
+						assert_eq!(
+							eval("0,1,2,3"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 sliceinclto")
+						)
+					}
+				}
 			}
 		}
 		mod sort {
