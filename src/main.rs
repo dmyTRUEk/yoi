@@ -106,7 +106,7 @@ impl<const N: usize> From<[StackElement; N]> for ProgramStack {
 #[derive(Debug, Clone, PartialEq)]
 enum StackElement {
 	Int(i64),
-	VecInt(Vec<i64>),
+	ArrInt(Vec<i64>),
 }
 impl From<&str> for StackElement {
 	fn from(value: &str) -> Self {
@@ -116,7 +116,7 @@ impl From<&str> for StackElement {
 			Int(n)
 		}
 		else if value.contains(",") {
-			VecInt(
+			ArrInt(
 				value.split(",").map(|n| n.parse().unwrap()).collect()
 			)
 		}
@@ -187,7 +187,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(_) => panic!(),
-				VecInt(v) => {
+				ArrInt(v) => {
 					let mut index_of_max_first = 0;
 					let (mut max, v) = v.split_first().unwrap();
 					for (i, el) in v.iter().enumerate() {
@@ -204,7 +204,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(_) => panic!(),
-				VecInt(v) => {
+				ArrInt(v) => {
 					let mut index_of_max_last = 0;
 					let (mut max, v) = v.split_first().unwrap();
 					for (i, el) in v.iter().enumerate() {
@@ -221,7 +221,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(_) => panic!(),
-				VecInt(v) => {
+				ArrInt(v) => {
 					let mut index_of_min_first = 0;
 					let (mut min, v) = v.split_first().unwrap();
 					for (i, el) in v.iter().enumerate() {
@@ -238,7 +238,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(_) => panic!(),
-				VecInt(v) => {
+				ArrInt(v) => {
 					let mut index_of_min_last = 0;
 					let (mut min, v) = v.split_first().unwrap();
 					for (i, el) in v.iter().enumerate() {
@@ -256,19 +256,19 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let pretop = program_stack.stack.pop().unwrap();
 			let new_top = match (pretop, top) {
 				(Int(pt), Int(t)) => {
-					VecInt(vec![pt, t])
+					ArrInt(vec![pt, t])
 				}
-				(VecInt(mut pt), VecInt(mut t)) => {
+				(ArrInt(mut pt), ArrInt(mut t)) => {
 					pt.append(&mut t);
-					VecInt(pt)
+					ArrInt(pt)
 				}
-				(VecInt(mut pt), Int(t)) => {
+				(ArrInt(mut pt), Int(t)) => {
 					pt.push(t);
-					VecInt(pt)
+					ArrInt(pt)
 				}
-				(Int(pt), VecInt(mut t)) => {
+				(Int(pt), ArrInt(mut t)) => {
 					t.insert(0, pt);
-					VecInt(t)
+					ArrInt(t)
 				}
 			};
 			program_stack.stack.push(new_top);
@@ -277,7 +277,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(_) => panic!(),
-				VecInt(v) => {
+				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().max().unwrap()));
 				}
 			}
@@ -286,7 +286,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(_) => panic!(),
-				VecInt(v) => {
+				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().min().unwrap()));
 				}
 			}
@@ -295,7 +295,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
 				Int(_) => panic!(),
-				VecInt(v) => {
+				ArrInt(v) => {
 					v.reverse();
 				}
 			}
@@ -304,7 +304,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
 				Int(_) => panic!(),
-				VecInt(v) => {
+				ArrInt(v) => {
 					v.sort();
 				}
 			}
@@ -331,15 +331,15 @@ mod token_exec {
 		#[test]
 		fn int_int() {
 			assert_eq!(
-				ProgramStack::from(VecInt(vec![1, 2])),
+				ProgramStack::from(ArrInt(vec![1, 2])),
 				ProgramStack::from([Int(1), Int(2)]).exec_val(Join)
 			)
 		}
 		#[test]
 		fn vi_vi() {
 			assert_eq!(
-				ProgramStack::from(VecInt(vec![1,2,3,4])),
-				ProgramStack::from([VecInt(vec![1,2]), VecInt(vec![3,4])]).exec_val(Join)
+				ProgramStack::from(ArrInt(vec![1,2,3,4])),
+				ProgramStack::from([ArrInt(vec![1,2]), ArrInt(vec![3,4])]).exec_val(Join)
 			)
 		}
 	}
@@ -349,8 +349,8 @@ mod token_exec {
 		#[test]
 		fn _0_1_2_3_4_5_6_7_8_9() {
 			assert_eq!(
-				ProgramStack::from(VecInt(vec![0,1,2,3,4,5,6,7,8,9])),
-				ProgramStack::from(VecInt(vec![5,9,1,3,4,0,8,7,2,6])).exec_val(Sort)
+				ProgramStack::from(ArrInt(vec![0,1,2,3,4,5,6,7,8,9])),
+				ProgramStack::from(ArrInt(vec![5,9,1,3,4,0,8,7,2,6])).exec_val(Sort)
 			)
 		}
 	}
