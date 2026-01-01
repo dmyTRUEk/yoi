@@ -27,7 +27,7 @@ use clap::Parser;
 	",
 )]
 struct CliArgs {
-	// TODO
+	// TODO?
 	// #[arg(short='i', long, default_value_t=false)]
 	// input_at_the_end: bool,
 
@@ -136,6 +136,8 @@ impl From<&str> for StackElement {
 #[repr(u8)]
 enum Token {
 	Literal(StackElement),
+
+	// TODO: add combinators: https://combinatorylogic.com/table.html
 
 	Abs,
 	Add,
