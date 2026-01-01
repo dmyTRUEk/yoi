@@ -180,6 +180,7 @@ enum Token {
 	Sort,
 	Subtract,
 	Swap,
+	SwapUnder, // swap two elements under top
 	// SwapN - swap with top with nth / n from top
 	// SwapNM
 	Tail, // everything but first
@@ -234,6 +235,7 @@ impl From<&str> for Token {
 				"sort" => Sort,
 				"sub" => Subtract,
 				"swap" => Swap,
+				"swapunder" => SwapUnder,
 				"tail" => Tail,
 				_ => Literal(StackElement::from(token_str))
 			}
@@ -757,6 +759,10 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		Swap => {
 			let len = program_stack.stack.len();
 			program_stack.stack.swap(len - 1, len - 2);
+		}
+		SwapUnder => {
+			let len = program_stack.stack.len();
+			program_stack.stack.swap(len - 2, len - 3);
 		}
 		Tail => {
 			let v = program_stack.stack.last_mut().unwrap();
@@ -1485,6 +1491,16 @@ mod program_exec {
 				assert_eq!(
 					eval("2,3 1"),
 					eval("1 2,3 swap")
+				)
+			}
+		}
+		mod swap_under {
+			use super::*;
+			#[test]
+			fn _1__2__3() {
+				assert_eq!(
+					eval("2 1 3"),
+					eval("1 2 3 swapunder")
 				)
 			}
 		}
