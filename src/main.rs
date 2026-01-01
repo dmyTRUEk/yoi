@@ -105,9 +105,11 @@ impl<const N: usize> From<[StackElement; N]> for ProgramStack {
 
 
 #[derive(Debug, Clone, PartialEq)]
+#[repr(u8)]
 enum StackElement {
 	Int(i64),
 	ArrInt(Vec<i64>),
+	TokenLiteral(Box<Token>),
 }
 impl From<&str> for StackElement {
 	fn from(value: &str) -> Self {
@@ -129,6 +131,7 @@ impl From<&str> for StackElement {
 
 
 
+#[derive(Debug, Clone, PartialEq)]
 #[repr(u8)]
 enum Token {
 	Literal(StackElement),
@@ -143,6 +146,7 @@ enum Token {
 	IndexOfMinLast,
 	Join,
 	Last,
+	// Map,
 	Max,
 	Min,
 	Negate,
@@ -158,24 +162,30 @@ impl From<&str> for Token {
 	fn from(token_str: &str) -> Self {
 		use Token::*;
 		// dbg!(token_str);
-		match token_str {
-			"at" => AtIndex,
-			"digits" => Digits,
-			"dup" => Duplicate,
-			"first" => First,
-			"imaxf" => IndexOfMaxFirst,
-			"imaxl" => IndexOfMaxLast,
-			"iminf" => IndexOfMinFirst,
-			"iminl" => IndexOfMinLast,
-			"join" => Join,
-			"last" => Last,
-			"max" => Max,
-			"min" => Min,
-			"neg" => Negate,
-			"rev" => Reverse,
-			"sort" => Sort,
-			"swap" => Swap,
-			_ => Literal(StackElement::from(token_str))
+		if let Some(token_str) = token_str.strip_prefix("'") {
+			Literal(StackElement::TokenLiteral(Box::new(Token::from(token_str))))
+		}
+		else {
+			match token_str {
+				"at" => AtIndex,
+				"digits" => Digits,
+				"dup" => Duplicate,
+				"first" => First,
+				"imaxf" => IndexOfMaxFirst,
+				"imaxl" => IndexOfMaxLast,
+				"iminf" => IndexOfMinFirst,
+				"iminl" => IndexOfMinLast,
+				"join" => Join,
+				"last" => Last,
+				// "map" => Map,
+				"max" => Max,
+				"min" => Min,
+				"neg" => Negate,
+				"rev" => Reverse,
+				"sort" => Sort,
+				"swap" => Swap,
+				_ => Literal(StackElement::from(token_str))
+			}
 		}
 	}
 }
@@ -191,6 +201,9 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		Literal(literal) => {
 			program_stack.stack.push(literal);
 		}
+		// TokenLiteral(_token) => { // TODO: process Literal(Token) somehow?
+		// 	// nothing
+		// }
 		AtIndex => {
 			let i = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
@@ -223,16 +236,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		First => {
 			let v = program_stack.stack.pop().unwrap();
 			match v {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.first().unwrap()));
 				}
+				_ => panic!()
 			}
 		}
 		IndexOfMaxFirst => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					let mut index_of_max_first = 0;
 					let (mut max, v) = v.split_first().unwrap();
@@ -244,12 +256,12 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					}
 					program_stack.stack.push(Int(index_of_max_first as i64));
 				}
+				_ => panic!()
 			}
 		}
 		IndexOfMaxLast => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					let mut index_of_max_last = 0;
 					let (mut max, v) = v.split_first().unwrap();
@@ -261,12 +273,12 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					}
 					program_stack.stack.push(Int(index_of_max_last as i64));
 				}
+				_ => panic!()
 			}
 		}
 		IndexOfMinFirst => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					let mut index_of_min_first = 0;
 					let (mut min, v) = v.split_first().unwrap();
@@ -278,12 +290,12 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					}
 					program_stack.stack.push(Int(index_of_min_first as i64));
 				}
+				_ => panic!()
 			}
 		}
 		IndexOfMinLast => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					let mut index_of_min_last = 0;
 					let (mut min, v) = v.split_first().unwrap();
@@ -295,6 +307,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					}
 					program_stack.stack.push(Int(index_of_min_last as i64));
 				}
+				_ => panic!(),
 			}
 		}
 		Join => {
@@ -316,34 +329,53 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					t.insert(0, pt);
 					ArrInt(t)
 				}
+				_ => panic!(),
 			};
 			program_stack.stack.push(new_top);
 		}
 		Last => {
 			let v = program_stack.stack.pop().unwrap();
 			match v {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.last().unwrap()));
 				}
+				_ => panic!(),
 			}
 		}
+		// Map => {
+		// 	let f = program_stack.stack.pop().unwrap();
+		// 	let v = program_stack.stack.pop().unwrap();
+		// 	match (v, f) {
+		// 		(ArrInt(v), TokenLiteral(f)) => {
+		// 			let res = v.into_iter()
+		// 				.map(|el| {
+		// 					ProgramStack::new()
+		// 						.exec_val(*f)
+		// 						.stack
+		// 						.last().unwrap()
+		// 				})
+		// 				.collect();
+		// 			program_stack.stack.push(ArrInt(res));
+		// 		}
+		// 		_ => panic!()
+		// 	}
+		// }
 		Max => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().max().unwrap()));
 				}
+				_ => panic!(),
 			}
 		}
 		Min => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().min().unwrap()));
 				}
+				_ => panic!(),
 			}
 		}
 		Negate => {
@@ -357,24 +389,25 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 						*el = -*el;
 					}
 				}
+				TokenLiteral(_) => panic!(),
 			}
 		}
 		Reverse => {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					v.reverse();
 				}
+				_ => panic!(),
 			}
 		}
 		Sort => {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
-				Int(_) => panic!(),
 				ArrInt(v) => {
 					v.sort();
 				}
+				_ => panic!(),
 			}
 		}
 		Swap => {
@@ -604,6 +637,16 @@ mod program_exec {
 				)
 			}
 		}
+		// mod map {
+		// 	use super::*;
+		// 	#[test]
+		// 	fn _1_2_3_abs() {
+		// 		assert_eq!(
+		// 			eval("1,2,3"),
+		// 			eval("-1,2,-3 'abs map")
+		// 		)
+		// 	}
+		// }
 		mod max {
 			use super::*;
 			#[test]
