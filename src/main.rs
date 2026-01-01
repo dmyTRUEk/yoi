@@ -132,6 +132,7 @@ enum Token {
 	Literal(StackElement),
 
 	Join,
+	Reverse,
 	Sort,
 }
 impl Token {
@@ -142,6 +143,7 @@ impl From<&str> for Token {
 		// dbg!(token_str);
 		match token_str {
 			"join" => Join,
+			"rev" => Reverse,
 			"sort" => Sort,
 			_ => Literal(StackElement::from(token_str))
 		}
@@ -180,6 +182,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				}
 			};
 			program_stack.stack.push(new_top);
+		}
+		Reverse => {
+			let top = program_stack.stack.last_mut().unwrap();
+			match top {
+				Int(_) => panic!(),
+				VecInt(v) => {
+					v.reverse();
+				}
+			}
 		}
 		Sort => {
 			let top = program_stack.stack.last_mut().unwrap();
@@ -270,6 +281,16 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3"),
 					eval("1 2,3 join")
+				)
+			}
+		}
+		mod reverse {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("3,2,1"),
+					eval("1,2,3 rev")
 				)
 			}
 		}
