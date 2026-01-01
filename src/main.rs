@@ -152,8 +152,13 @@ enum Token {
 	Min,
 	Negate,
 	Reverse,
+	// TODO: SliceArr 0,1,2,3,4,5,6 2,5 slicearr -> 2,3,4,5
+	SliceExcludingExcluding,
+	SliceExcludingIncluding,
 	SliceExcludingFrom,
 	SliceExcludingTo,
+	SliceIncludingExcluding,
+	SliceIncludingIncluding,
 	SliceIncludingFrom,
 	SliceIncludingTo,
 	Sort,
@@ -188,8 +193,12 @@ impl From<&str> for Token {
 				"min" => Min,
 				"neg" => Negate,
 				"rev" => Reverse,
+				"sliceexclexcl" => SliceExcludingExcluding,
+				"sliceexclincl" => SliceExcludingIncluding,
 				"sliceexclfrom" => SliceExcludingFrom,
 				"sliceexclto" => SliceExcludingTo,
+				"sliceinclexcl" => SliceIncludingExcluding,
+				"sliceinclincl" => SliceIncludingIncluding,
 				"sliceinclfrom" => SliceIncludingFrom,
 				"sliceinclto" => SliceIncludingTo,
 				"sort" => Sort,
@@ -425,6 +434,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!(),
 			}
 		}
+		SliceExcludingExcluding => {
+			let index_to = program_stack.stack.pop().unwrap();
+			let index_from = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (index_from, index_to, v) {
+				(Int(index_from), Int(index_to), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[index_from as usize + 1 .. index_to as usize].to_vec()));
+				}
+				_ => panic!(),
+			}
+		}
+		SliceExcludingIncluding => {
+			let index_to = program_stack.stack.pop().unwrap();
+			let index_from = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (index_from, index_to, v) {
+				(Int(index_from), Int(index_to), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[index_from as usize + 1 ..= index_to as usize].to_vec()));
+				}
+				_ => panic!(),
+			}
+		}
 		SliceExcludingFrom => {
 			let i = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
@@ -441,6 +472,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			match (i, v) {
 				(Int(i), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[.. i as usize].to_vec()));
+				}
+				_ => panic!(),
+			}
+		}
+		SliceIncludingExcluding => {
+			let index_to = program_stack.stack.pop().unwrap();
+			let index_from = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (index_from, index_to, v) {
+				(Int(index_from), Int(index_to), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[index_from as usize .. index_to as usize].to_vec()));
+				}
+				_ => panic!(),
+			}
+		}
+		SliceIncludingIncluding => {
+			let index_to = program_stack.stack.pop().unwrap();
+			let index_from = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (index_from, index_to, v) {
+				(Int(index_from), Int(index_to), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[index_from as usize ..= index_to as usize].to_vec()));
 				}
 				_ => panic!(),
 			}
@@ -815,6 +868,29 @@ mod program_exec {
 						)
 					}
 				}
+				mod from_to {
+					use super::*;
+					mod excluding {
+						use super::*;
+						#[test]
+						fn _0_1_2_3_4_5_6_7_8_9() {
+							assert_eq!(
+								eval("4,5"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceexclexcl")
+							)
+						}
+					}
+					mod including {
+						use super::*;
+						#[test]
+						fn _0_1_2_3_4_5_6_7_8_9() {
+							assert_eq!(
+								eval("4,5,6"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceexclincl")
+							)
+						}
+					}
+				}
 			}
 			mod including {
 				use super::*;
@@ -836,6 +912,29 @@ mod program_exec {
 							eval("0,1,2,3"),
 							eval("0,1,2,3,4,5,6,7,8,9 3 sliceinclto")
 						)
+					}
+				}
+				mod from_to {
+					use super::*;
+					mod excluding {
+						use super::*;
+						#[test]
+						fn _0_1_2_3_4_5_6_7_8_9() {
+							assert_eq!(
+								eval("3,4,5"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceinclexcl")
+							)
+						}
+					}
+					mod including {
+						use super::*;
+						#[test]
+						fn _0_1_2_3_4_5_6_7_8_9() {
+							assert_eq!(
+								eval("3,4,5,6"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceinclincl")
+							)
+						}
 					}
 				}
 			}
