@@ -234,7 +234,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 						*el = el.abs();
 					}
 				}
-				TokenLiteral(_) => panic!(),
+				TokenLiteral(_) => panic!()
 			}
 		}
 		AtIndex => {
@@ -244,7 +244,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(i), ArrInt(v)) => {
 					program_stack.stack.push(Int(v[i as usize]));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		Digits => {
@@ -340,7 +340,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					}
 					program_stack.stack.push(Int(index_of_min_last as i64));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		Join => {
@@ -362,7 +362,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					t.insert(0, pt);
 					ArrInt(t)
 				}
-				_ => panic!(),
+				_ => panic!()
 			};
 			program_stack.stack.push(new_top);
 		}
@@ -372,7 +372,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.last().unwrap()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		// Map => {
@@ -399,7 +399,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().max().unwrap()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		Min => {
@@ -408,7 +408,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().min().unwrap()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		Negate => {
@@ -422,7 +422,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 						*el = -*el;
 					}
 				}
-				TokenLiteral(_) => panic!(),
+				TokenLiteral(_) => panic!()
 			}
 		}
 		Reverse => {
@@ -431,7 +431,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				ArrInt(v) => {
 					v.reverse();
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		SliceExcludingExcluding => {
@@ -442,7 +442,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(index_from), Int(index_to), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[index_from as usize + 1 .. index_to as usize].to_vec()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		SliceExcludingIncluding => {
@@ -453,7 +453,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(index_from), Int(index_to), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[index_from as usize + 1 ..= index_to as usize].to_vec()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		SliceExcludingFrom => {
@@ -463,7 +463,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(i), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[i as usize + 1 ..].to_vec()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		SliceExcludingTo => {
@@ -473,7 +473,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(i), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[.. i as usize].to_vec()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		SliceIncludingExcluding => {
@@ -484,7 +484,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(index_from), Int(index_to), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[index_from as usize .. index_to as usize].to_vec()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		SliceIncludingIncluding => {
@@ -495,7 +495,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(index_from), Int(index_to), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[index_from as usize ..= index_to as usize].to_vec()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		SliceIncludingFrom => {
@@ -505,7 +505,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(i), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[i as usize ..].to_vec()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		SliceIncludingTo => {
@@ -515,7 +515,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				(Int(i), ArrInt(v)) => {
 					program_stack.stack.push(ArrInt(v[..= i as usize].to_vec()));
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		Sort => {
@@ -524,7 +524,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				ArrInt(v) => {
 					v.sort();
 				}
-				_ => panic!(),
+				_ => panic!()
 			}
 		}
 		Swap => {
