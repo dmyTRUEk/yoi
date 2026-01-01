@@ -133,6 +133,8 @@ enum Token {
 
 	Duplicate,
 	Join,
+	Max,
+	Min,
 	Reverse,
 	Sort,
 }
@@ -145,6 +147,8 @@ impl From<&str> for Token {
 		match token_str {
 			"dup" => Duplicate,
 			"join" => Join,
+			"max" => Max,
+			"min" => Min,
 			"rev" => Reverse,
 			"sort" => Sort,
 			_ => Literal(StackElement::from(token_str))
@@ -187,6 +191,24 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				}
 			};
 			program_stack.stack.push(new_top);
+		}
+		Max => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(_) => panic!(),
+				VecInt(v) => {
+					program_stack.stack.push(Int(*v.iter().max().unwrap()));
+				}
+			}
+		}
+		Min => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(_) => panic!(),
+				VecInt(v) => {
+					program_stack.stack.push(Int(*v.iter().min().unwrap()));
+				}
+			}
 		}
 		Reverse => {
 			let top = program_stack.stack.last_mut().unwrap();
@@ -303,6 +325,26 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3"),
 					eval("1 2,3 join")
+				)
+			}
+		}
+		mod max {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("3"),
+					eval("1,2,3 max")
+				)
+			}
+		}
+		mod min {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("1"),
+					eval("1,2,3 min")
 				)
 			}
 		}
