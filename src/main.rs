@@ -113,19 +113,19 @@ enum StackElement {
 	TokenLiteral(Box<Token>),
 }
 impl From<&str> for StackElement {
-	fn from(value: &str) -> Self {
+	fn from(s: &str) -> Self {
 		use StackElement::*;
-		// dbg!(value);
-		if let Ok(n) = value.parse::<i64>() {
+		// dbg!(s);
+		if let Ok(n) = s.parse::<i64>() {
 			Int(n)
 		}
-		else if value.contains(",") {
+		else if s.contains(",") {
 			ArrInt(
-				value.split(",").map(|n| n.parse().unwrap()).collect()
+				s.split(",").map(|n| n.parse().unwrap()).collect()
 			)
 		}
 		else {
-			unimplemented!()
+			unimplemented!("{s}")
 		}
 	}
 }
