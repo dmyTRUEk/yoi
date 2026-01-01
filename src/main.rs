@@ -137,6 +137,7 @@ enum Token {
 	Literal(StackElement),
 
 	Abs,
+	Add,
 	AtIndex,
 	Decrease,
 	Digits,
@@ -169,6 +170,7 @@ enum Token {
 	SliceIncludingFrom,
 	SliceIncludingTo,
 	Sort,
+	Subtract,
 	Swap,
 	// SwapN - swap with top with nth / n from top
 	// SwapNM
@@ -185,6 +187,7 @@ impl From<&str> for Token {
 		else {
 			match token_str {
 				"abs" => Abs,
+				"add" => Add,
 				"at" => AtIndex,
 				"dec" => Decrease,
 				"digits" => Digits,
@@ -215,6 +218,7 @@ impl From<&str> for Token {
 				"sliceinclfrom" => SliceIncludingFrom,
 				"sliceinclto" => SliceIncludingTo,
 				"sort" => Sort,
+				"sub" => Subtract,
 				"swap" => Swap,
 				_ => Literal(StackElement::from(token_str))
 			}
@@ -248,6 +252,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					}
 				}
 				TokenLiteral(_) => panic!()
+			}
+		}
+		Add => {
+			let a = program_stack.stack.pop().unwrap();
+			let b = program_stack.stack.last_mut().unwrap();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					*b += a;
+				}
+				(Int(n), ArrInt(v)) => {
+					for el in v {
+						*el += n;
+					}
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					for (a, b) in a.iter().zip(b) {
+						*b += a;
+					}
+				}
+				_ => panic!()
 			}
 		}
 		AtIndex => {
@@ -594,6 +620,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
+		Subtract => {
+			let i = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.last_mut().unwrap();
+			match (i, v) {
+				(Int(a), Int(b)) => {
+					*b -= a;
+				}
+				(Int(n), ArrInt(v)) => {
+					for el in v {
+						*el -= n;
+					}
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					for (a, b) in a.iter().zip(b) {
+						*b -= a;
+					}
+				}
+				_ => panic!()
+			}
+		}
 		Swap => {
 			let len = program_stack.stack.len();
 			program_stack.stack.swap(len - 1, len - 2);
@@ -672,6 +720,30 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3"),
 					eval("-1,2,-3 abs")
+				)
+			}
+		}
+		mod add {
+			use super::*;
+			#[test]
+			fn _10__1() {
+				assert_eq!(
+					eval("11"),
+					eval("10 1 add")
+				)
+			}
+			#[test]
+			fn _10_20_30__1() {
+				assert_eq!(
+					eval("11,21,31"),
+					eval("10,20,30 1 add")
+				)
+			}
+			#[test]
+			fn _10_20_30__1_2_3() {
+				assert_eq!(
+					eval("11,22,33"),
+					eval("10,20,30 1,2,3 add")
 				)
 			}
 		}
@@ -1082,6 +1154,30 @@ mod program_exec {
 				assert_eq!(
 					eval("0,1,2,3,4,5,6,7,8,9"),
 					eval("5,9,1,3,4,0,8,7,2,6 sort")
+				)
+			}
+		}
+		mod subtract {
+			use super::*;
+			#[test]
+			fn _10__1() {
+				assert_eq!(
+					eval("9"),
+					eval("10 1 sub")
+				)
+			}
+			#[test]
+			fn _10_20_30__1() {
+				assert_eq!(
+					eval("9,19,29"),
+					eval("10,20,30 1 sub")
+				)
+			}
+			#[test]
+			fn _10_20_30__1_2_3() {
+				assert_eq!(
+					eval("9,18,27"),
+					eval("10,20,30 1,2,3 sub")
 				)
 			}
 		}
