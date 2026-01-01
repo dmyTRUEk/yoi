@@ -161,6 +161,7 @@ enum Token {
 	Min,
 	ModuloFake,
 	ModuloRemEuclid,
+	MoveTo,
 	MoveToBottom,
 	Multiply,
 	Negate,
@@ -220,6 +221,7 @@ impl From<&str> for Token {
 				"min" => Min,
 				"mod" => ModuloRemEuclid,
 				"modf" => ModuloFake,
+				"moveto" => MoveTo,
 				"mul" => Multiply,
 				"neg" => Negate,
 				"range0excl" => Range0Excluding,
@@ -572,6 +574,16 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					for (a, b) in a.iter().zip(b) {
 						*b = b.rem_euclid(*a);
 					}
+				}
+				_ => panic!()
+			}
+		}
+		MoveTo => {
+			let i = program_stack.stack.pop().unwrap();
+			match i {
+				Int(i) => {
+					let el = program_stack.stack.pop().unwrap();
+					program_stack.stack.insert(i as usize, el);
 				}
 				_ => panic!()
 			}
@@ -1261,6 +1273,16 @@ mod program_exec {
 				assert_eq!(
 					eval("2,1,2"),
 					eval("-10,-20,-30 6,7,8 mod")
+				)
+			}
+		}
+		mod move_to {
+			use super::*;
+			#[test]
+			fn _0__1__2__3__4__5() {
+				assert_eq!(
+					eval("0 1 5 2 3 4"),
+					eval("0 1 2 3 4 5 2 moveto")
 				)
 			}
 		}
