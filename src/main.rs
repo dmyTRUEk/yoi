@@ -146,9 +146,9 @@ enum Token {
 	Decrease,
 	Digits,
 	DivideInt,
-	Duplicate,
-	DuplicateFrom, // index in stack
-	DuplicateTo, // index in stack
+	DuplicateTop,
+	DuplicateFromIndex,
+	DuplicateToIndex,
 	DuplicateToBottom,
 	First,
 	Head, // everything but last
@@ -165,8 +165,8 @@ enum Token {
 	ModuloFake,
 	ModuloRemEuclid,
 	//Move, // noop
-	MoveFrom,
-	MoveTo,
+	MoveFromIndex,
+	MoveToIndex,
 	MoveToBottom,
 	Multiply,
 	Negate,
@@ -211,9 +211,9 @@ impl From<&str> for Token {
 				"dec" => Decrease,
 				"digits" => Digits,
 				"divint" => DivideInt,
-				"dup" => Duplicate,
-				"dupfrom" => DuplicateFrom,
-				"dupto" => DuplicateTo,
+				"dup" => DuplicateTop,
+				"dupfrom" => DuplicateFromIndex,
+				"dupto" => DuplicateToIndex,
 				"duptobottom" => DuplicateToBottom,
 				"first" => First,
 				"head" => Head,
@@ -229,8 +229,10 @@ impl From<&str> for Token {
 				"min" => Min,
 				"mod" => ModuloRemEuclid,
 				"modf" => ModuloFake,
-				"movefrom" => MoveFrom,
-				"moveto" => MoveTo,
+				//"move" => Move, // noop
+				"movefrom" => MoveFromIndex,
+				"moveto" => MoveToIndex,
+				"movetobottom" => MoveToBottom,
 				"mul" => Multiply,
 				"neg" => Negate,
 				"range0excl" => Range0Excluding,
@@ -252,7 +254,6 @@ impl From<&str> for Token {
 				"swapunder" => SwapUnder,
 				"swapwith" => SwapWithIndex,
 				"tail" => Tail,
-				"tobottom" => MoveToBottom,
 				_ => Literal(StackElement::from(token_str))
 			}
 		}
@@ -366,10 +367,10 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
-		Duplicate => {
+		DuplicateTop => {
 			program_stack.stack.push(program_stack.stack.last().unwrap().clone());
 		}
-		DuplicateFrom => {
+		DuplicateFromIndex => {
 			let i = program_stack.stack.pop().unwrap();
 			match i {
 				Int(i) => {
@@ -380,7 +381,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
-		DuplicateTo => {
+		DuplicateToIndex => {
 			let i = program_stack.stack.pop().unwrap();
 			match i {
 				Int(i) => {
@@ -605,7 +606,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
-		MoveFrom => {
+		MoveFromIndex => {
 			let i = program_stack.stack.pop().unwrap();
 			match i {
 				Int(i) => {
@@ -615,7 +616,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
-		MoveTo => {
+		MoveToIndex => {
 			let i = program_stack.stack.pop().unwrap();
 			match i {
 				Int(i) => {
@@ -1369,7 +1370,7 @@ mod program_exec {
 			fn _1__2__3() {
 				assert_eq!(
 					eval("3 1 2"),
-					eval("1 2 3 tobottom")
+					eval("1 2 3 movetobottom")
 				)
 			}
 		}
