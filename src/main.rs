@@ -147,6 +147,7 @@ enum Token {
 	DivideInt,
 	Duplicate,
 	First,
+	Head, // everything but last
 	Increase,
 	IndexOfMaxFirst,
 	IndexOfMaxLast,
@@ -181,6 +182,7 @@ enum Token {
 	Swap,
 	// SwapN - swap with top with nth / n from top
 	// SwapNM
+	Tail, // everything but first
 }
 impl Token {
 }
@@ -201,6 +203,7 @@ impl From<&str> for Token {
 				"divint" => DivideInt,
 				"dup" => Duplicate,
 				"first" => First,
+				"head" => Head,
 				"imaxf" => IndexOfMaxFirst,
 				"imaxl" => IndexOfMaxLast,
 				"iminf" => IndexOfMinFirst,
@@ -231,6 +234,7 @@ impl From<&str> for Token {
 				"sort" => Sort,
 				"sub" => Subtract,
 				"swap" => Swap,
+				"tail" => Tail,
 				_ => Literal(StackElement::from(token_str))
 			}
 		}
@@ -455,6 +459,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			};
 			program_stack.stack.push(new_top);
+		}
+		Head => {
+			let v = program_stack.stack.last_mut().unwrap();
+			match v {
+				ArrInt(v) => {
+					let _ = v.pop().unwrap();
+				}
+				_ => panic!()
+			}
 		}
 		Last => {
 			let v = program_stack.stack.pop().unwrap();
@@ -744,6 +757,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		Swap => {
 			let len = program_stack.stack.len();
 			program_stack.stack.swap(len - 1, len - 2);
+		}
+		Tail => {
+			let v = program_stack.stack.last_mut().unwrap();
+			match v {
+				ArrInt(v) => {
+					let _ = v.remove(0);
+				}
+				_ => panic!()
+			}
 		}
 	}
 }
@@ -1063,6 +1085,16 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3"),
 					eval("1 2,3 join")
+				)
+			}
+		}
+		mod head {
+			use super::*;
+			#[test]
+			fn _4_5_6_7() {
+				assert_eq!(
+					eval("4,5,6"),
+					eval("4,5,6,7 head")
 				)
 			}
 		}
@@ -1453,6 +1485,16 @@ mod program_exec {
 				assert_eq!(
 					eval("2,3 1"),
 					eval("1 2,3 swap")
+				)
+			}
+		}
+		mod tail {
+			use super::*;
+			#[test]
+			fn _4_5_6_7() {
+				assert_eq!(
+					eval("5,6,7"),
+					eval("4,5,6,7 tail")
 				)
 			}
 		}
