@@ -142,9 +142,9 @@ enum Token {
 	IndexOfMinFirst,
 	IndexOfMinLast,
 	Join,
+	Last,
 	Max,
 	Min,
-	Last,
 	Reverse,
 	Sort,
 	Swap,
@@ -317,6 +317,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			};
 			program_stack.stack.push(new_top);
 		}
+		Last => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				Int(_) => panic!(),
+				ArrInt(v) => {
+					program_stack.stack.push(Int(*v.last().unwrap()));
+				}
+			}
+		}
 		Max => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
@@ -332,15 +341,6 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				Int(_) => panic!(),
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().min().unwrap()));
-				}
-			}
-		}
-		Last => {
-			let v = program_stack.stack.pop().unwrap();
-			match v {
-				Int(_) => panic!(),
-				ArrInt(v) => {
-					program_stack.stack.push(Int(*v.last().unwrap()));
 				}
 			}
 		}
