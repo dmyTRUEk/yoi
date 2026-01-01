@@ -145,6 +145,7 @@ enum Token {
 	Last,
 	Max,
 	Min,
+	Negate,
 	Reverse,
 	Sort,
 	Swap,
@@ -170,6 +171,7 @@ impl From<&str> for Token {
 			"last" => Last,
 			"max" => Max,
 			"min" => Min,
+			"neg" => Negate,
 			"rev" => Reverse,
 			"sort" => Sort,
 			"swap" => Swap,
@@ -341,6 +343,19 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				Int(_) => panic!(),
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().min().unwrap()));
+				}
+			}
+		}
+		Negate => {
+			let top = program_stack.stack.last_mut().unwrap();
+			match top {
+				Int(n) => {
+					*n = -*n;
+				}
+				ArrInt(v) => {
+					for el in v {
+						*el = -*el;
+					}
 				}
 			}
 		}
@@ -606,6 +621,23 @@ mod program_exec {
 				assert_eq!(
 					eval("1"),
 					eval("1,2,3 min")
+				)
+			}
+		}
+		mod negate {
+			use super::*;
+			#[test]
+			fn int() {
+				assert_eq!(
+					eval("-42"),
+					eval("42 neg")
+				)
+			}
+			#[test]
+			fn vi() {
+				assert_eq!(
+					eval("-1,-2,-3"),
+					eval("1,2,3 neg")
 				)
 			}
 		}
