@@ -147,6 +147,7 @@ enum Token {
 	Digits,
 	DivideInt,
 	Duplicate,
+	DuplicateFrom, // index in stack
 	DuplicateTo, // index in stack
 	First,
 	Head, // everything but last
@@ -208,6 +209,7 @@ impl From<&str> for Token {
 				"digits" => Digits,
 				"divint" => DivideInt,
 				"dup" => Duplicate,
+				"dupfrom" => DuplicateFrom,
 				"dupto" => DuplicateTo,
 				"first" => First,
 				"head" => Head,
@@ -361,6 +363,17 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		}
 		Duplicate => {
 			program_stack.stack.push(program_stack.stack.last().unwrap().clone());
+		}
+		DuplicateFrom => {
+			let i = program_stack.stack.pop().unwrap();
+			match i {
+				Int(i) => {
+					program_stack.stack.push(
+						program_stack.stack[i as usize].clone()
+					);
+				}
+				_ => panic!()
+			}
 		}
 		DuplicateTo => {
 			let i = program_stack.stack.pop().unwrap();
@@ -1008,6 +1021,16 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3 1,2,3"),
 					eval("1,2,3 dup")
+				)
+			}
+		}
+		mod duplicate_from {
+			use super::*;
+			#[test]
+			fn _0__1__2__3__4__5() {
+				assert_eq!(
+					eval("0 1 2 3 4 5 2"),
+					eval("0 1 2 3 4 5  2 dupfrom")
 				)
 			}
 		}
