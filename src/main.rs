@@ -131,6 +131,7 @@ impl From<&str> for StackElement {
 enum Token {
 	Literal(StackElement),
 
+	Duplicate,
 	Join,
 	Reverse,
 	Sort,
@@ -142,6 +143,7 @@ impl From<&str> for Token {
 		use Token::*;
 		// dbg!(token_str);
 		match token_str {
+			"dup" => Duplicate,
 			"join" => Join,
 			"rev" => Reverse,
 			"sort" => Sort,
@@ -160,6 +162,9 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 	match token {
 		Literal(literal) => {
 			program_stack.stack.push(literal);
+		}
+		Duplicate => {
+			program_stack.stack.push(program_stack.stack.last().unwrap().clone());
 		}
 		Join => {
 			let top = program_stack.stack.pop().unwrap();
@@ -253,6 +258,23 @@ mod program_exec {
 	use super::*;
 	mod token {
 		use super::*;
+		mod duplicate {
+			use super::*;
+			#[test]
+			fn int() {
+				assert_eq!(
+					eval("42 42"),
+					eval("42 dup")
+				)
+			}
+			#[test]
+			fn vi() {
+				assert_eq!(
+					eval("1,2,3 1,2,3"),
+					eval("1,2,3 dup")
+				)
+			}
+		}
 		mod join {
 			use super::*;
 			#[test]
