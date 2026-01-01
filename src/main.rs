@@ -138,9 +138,11 @@ enum Token {
 
 	Abs,
 	AtIndex,
+	Decrease,
 	Digits,
 	Duplicate,
 	First,
+	Increase,
 	IndexOfMaxFirst,
 	IndexOfMaxLast,
 	IndexOfMinFirst,
@@ -179,6 +181,7 @@ impl From<&str> for Token {
 			match token_str {
 				"abs" => Abs,
 				"at" => AtIndex,
+				"dec" => Decrease,
 				"digits" => Digits,
 				"dup" => Duplicate,
 				"first" => First,
@@ -186,6 +189,7 @@ impl From<&str> for Token {
 				"imaxl" => IndexOfMaxLast,
 				"iminf" => IndexOfMinFirst,
 				"iminl" => IndexOfMinLast,
+				"inc" => Increase,
 				"join" => Join,
 				"last" => Last,
 				// "map" => Map,
@@ -247,6 +251,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
+		Decrease => {
+			let i = program_stack.stack.last_mut().unwrap();
+			match i {
+				Int(i) => {
+					*i -= 1;
+				}
+				_ => panic!()
+			}
+		}
 		Digits => {
 			let i = program_stack.stack.pop().unwrap();
 			match i {
@@ -271,6 +284,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			match v {
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.first().unwrap()));
+				}
+				_ => panic!()
+			}
+		}
+		Increase => {
+			let i = program_stack.stack.last_mut().unwrap();
+			match i {
+				Int(i) => {
+					*i += 1;
 				}
 				_ => panic!()
 			}
@@ -632,6 +654,16 @@ mod program_exec {
 				)
 			}
 		}
+		mod decrease {
+			use super::*;
+			#[test]
+			fn _42() {
+				assert_eq!(
+					eval("41"),
+					eval("42 dec")
+				)
+			}
+		}
 		mod digits {
 			use super::*;
 			#[test]
@@ -666,6 +698,16 @@ mod program_exec {
 				assert_eq!(
 					eval("1"),
 					eval("1,2,3 first")
+				)
+			}
+		}
+		mod increase {
+			use super::*;
+			#[test]
+			fn _42() {
+				assert_eq!(
+					eval("43"),
+					eval("42 inc")
 				)
 			}
 		}
