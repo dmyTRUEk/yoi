@@ -146,10 +146,11 @@ enum Token {
 	Decrease,
 	Digits,
 	DivideInt,
-	DuplicateTop,
+	// TODO: rename to copy?
 	DuplicateFromIndex,
 	DuplicateToIndex,
 	DuplicateToBottom,
+	DuplicateTop,
 	First,
 	Head, // everything but last
 	Increase,
@@ -367,9 +368,6 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
-		DuplicateTop => {
-			program_stack.stack.push(program_stack.stack.last().unwrap().clone());
-		}
 		DuplicateFromIndex => {
 			let i = program_stack.stack.pop().unwrap();
 			match i {
@@ -398,6 +396,9 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				0,
 				program_stack.stack.last().unwrap().clone()
 			);
+		}
+		DuplicateTop => {
+			program_stack.stack.push(program_stack.stack.last().unwrap().clone());
 		}
 		First => {
 			let v = program_stack.stack.pop().unwrap();
@@ -1031,49 +1032,52 @@ mod program_exec {
 		}
 		mod duplicate {
 			use super::*;
-			#[test]
-			fn int() {
-				assert_eq!(
-					eval("42 42"),
-					eval("42 dup")
-				)
+			mod from {
+				use super::*;
+				#[test]
+				fn _0__1__2__3__4__5() {
+					assert_eq!(
+						eval("0 1 2 3 4 5 2"),
+						eval("0 1 2 3 4 5  2 dupfrom")
+					)
+				}
 			}
-			#[test]
-			fn vi() {
-				assert_eq!(
-					eval("1,2,3 1,2,3"),
-					eval("1,2,3 dup")
-				)
+			mod to {
+				use super::*;
+				#[test]
+				fn _0__1__2__3__4__5() {
+					assert_eq!(
+						eval("0 1 5 2 3 4 5"),
+						eval("0 1 2 3 4 5  2 dupto")
+					)
+				}
 			}
-		}
-		mod duplicate_from {
-			use super::*;
-			#[test]
-			fn _0__1__2__3__4__5() {
-				assert_eq!(
-					eval("0 1 2 3 4 5 2"),
-					eval("0 1 2 3 4 5  2 dupfrom")
-				)
+			mod to_bottom {
+				use super::*;
+				#[test]
+				fn _0__1__2__3__4__5() {
+					assert_eq!(
+						eval("5 0 1 2 3 4 5"),
+						eval("0 1 2 3 4 5 duptobottom")
+					)
+				}
 			}
-		}
-		mod duplicate_to {
-			use super::*;
-			#[test]
-			fn _0__1__2__3__4__5() {
-				assert_eq!(
-					eval("0 1 5 2 3 4 5"),
-					eval("0 1 2 3 4 5  2 dupto")
-				)
-			}
-		}
-		mod duplicate_to_bottom {
-			use super::*;
-			#[test]
-			fn _0__1__2__3__4__5() {
-				assert_eq!(
-					eval("5 0 1 2 3 4 5"),
-					eval("0 1 2 3 4 5  duptobottom")
-				)
+			mod top {
+				use super::*;
+				#[test]
+				fn int() {
+					assert_eq!(
+						eval("42 42"),
+						eval("42 dup")
+					)
+				}
+				#[test]
+				fn vi() {
+					assert_eq!(
+						eval("1,2,3 1,2,3"),
+						eval("1,2,3 dup")
+					)
+				}
 			}
 		}
 		mod first {
@@ -1254,124 +1258,130 @@ mod program_exec {
 				)
 			}
 		}
-		mod modulo_fake {
+		mod modulo {
 			use super::*;
-			#[test]
-			fn _42__5() {
-				assert_eq!(
-					eval("2"),
-					eval("42 5 modf")
-				)
+			mod fake {
+				use super::*;
+				#[test]
+				fn _42__5() {
+					assert_eq!(
+						eval("2"),
+						eval("42 5 modf")
+					)
+				}
+				#[test]
+				fn _m42__5() {
+					assert_eq!(
+						eval("-2"),
+						eval("-42 5 modf")
+					)
+				}
+				#[test]
+				fn _10_20_30__7() {
+					assert_eq!(
+						eval("3,6,2"),
+						eval("10,20,30 7 modf")
+					)
+				}
+				#[test]
+				fn _m10_m20_m30__7() {
+					assert_eq!(
+						eval("-3,-6,-2"),
+						eval("-10,-20,-30 7 modf")
+					)
+				}
+				#[test]
+				fn _10_20_30__6_7_8() {
+					assert_eq!(
+						eval("4,6,6"),
+						eval("10,20,30 6,7,8 modf")
+					)
+				}
+				#[test]
+				fn _m10_m20_m30__6_7_8() {
+					assert_eq!(
+						eval("-4,-6,-6"),
+						eval("-10,-20,-30 6,7,8 modf")
+					)
+				}
 			}
-			#[test]
-			fn _m42__5() {
-				assert_eq!(
-					eval("-2"),
-					eval("-42 5 modf")
-				)
-			}
-			#[test]
-			fn _10_20_30__7() {
-				assert_eq!(
-					eval("3,6,2"),
-					eval("10,20,30 7 modf")
-				)
-			}
-			#[test]
-			fn _m10_m20_m30__7() {
-				assert_eq!(
-					eval("-3,-6,-2"),
-					eval("-10,-20,-30 7 modf")
-				)
-			}
-			#[test]
-			fn _10_20_30__6_7_8() {
-				assert_eq!(
-					eval("4,6,6"),
-					eval("10,20,30 6,7,8 modf")
-				)
-			}
-			#[test]
-			fn _m10_m20_m30__6_7_8() {
-				assert_eq!(
-					eval("-4,-6,-6"),
-					eval("-10,-20,-30 6,7,8 modf")
-				)
+			mod rem_euclid {
+				use super::*;
+				#[test]
+				fn _42__5() {
+					assert_eq!(
+						eval("2"),
+						eval("42 5 mod")
+					)
+				}
+				#[test]
+				fn _m42__5() {
+					assert_eq!(
+						eval("3"),
+						eval("-42 5 mod")
+					)
+				}
+				#[test]
+				fn _10_20_30__7() {
+					assert_eq!(
+						eval("3,6,2"),
+						eval("10,20,30 7 mod")
+					)
+				}
+				#[test]
+				fn _m10_m20_m30__7() {
+					assert_eq!(
+						eval("4,1,5"),
+						eval("-10,-20,-30 7 mod")
+					)
+				}
+				#[test]
+				fn _10_20_30__6_7_8() {
+					assert_eq!(
+						eval("4,6,6"),
+						eval("10,20,30 6,7,8 mod")
+					)
+				}
+				#[test]
+				fn _m10_m20_m30__6_7_8() {
+					assert_eq!(
+						eval("2,1,2"),
+						eval("-10,-20,-30 6,7,8 mod")
+					)
+				}
 			}
 		}
-		mod modulo_rem_euclid {
+		mod move_ {
 			use super::*;
-			#[test]
-			fn _42__5() {
-				assert_eq!(
-					eval("2"),
-					eval("42 5 mod")
-				)
+			mod from {
+				use super::*;
+				#[test]
+				fn _0__1__2__3__4__5() {
+					assert_eq!(
+						eval("0 1 3 4 5 2"),
+						eval("0 1 2 3 4 5  2 movefrom")
+					)
+				}
 			}
-			#[test]
-			fn _m42__5() {
-				assert_eq!(
-					eval("3"),
-					eval("-42 5 mod")
-				)
+			mod to {
+				use super::*;
+				#[test]
+				fn _0__1__2__3__4__5() {
+					assert_eq!(
+						eval("0 1 5 2 3 4"),
+						eval("0 1 2 3 4 5  2 moveto")
+					)
+				}
 			}
-			#[test]
-			fn _10_20_30__7() {
-				assert_eq!(
-					eval("3,6,2"),
-					eval("10,20,30 7 mod")
-				)
-			}
-			#[test]
-			fn _m10_m20_m30__7() {
-				assert_eq!(
-					eval("4,1,5"),
-					eval("-10,-20,-30 7 mod")
-				)
-			}
-			#[test]
-			fn _10_20_30__6_7_8() {
-				assert_eq!(
-					eval("4,6,6"),
-					eval("10,20,30 6,7,8 mod")
-				)
-			}
-			#[test]
-			fn _m10_m20_m30__6_7_8() {
-				assert_eq!(
-					eval("2,1,2"),
-					eval("-10,-20,-30 6,7,8 mod")
-				)
-			}
-		}
-		mod move_from {
-			use super::*;
-			#[test]
-			fn _0__1__2__3__4__5() {
-				assert_eq!(
-					eval("0 1 3 4 5 2"),
-					eval("0 1 2 3 4 5  2 movefrom")
-				)
-			}
-		}
-		mod move_to {
-			use super::*;
-			#[test]
-			fn _0__1__2__3__4__5() {
-				assert_eq!(
-					eval("0 1 5 2 3 4"),
-					eval("0 1 2 3 4 5  2 moveto")
-				)
-			}
-		}
-		mod move_to_bottom {
-			use super::*;
-			#[test]
-			fn _1__2__3() {
-				assert_eq!(
-					eval("3 1 2"),
-					eval("1 2 3 movetobottom")
-				)
+			mod to_bottom {
+				use super::*;
+				#[test]
+				fn _1__2__3() {
+					assert_eq!(
+						eval("3 1 2"),
+						eval("1 2 3 movetobottom")
+					)
+				}
 			}
 		}
 		mod multiply {
