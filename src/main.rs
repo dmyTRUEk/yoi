@@ -153,6 +153,8 @@ enum Token {
 	// Map,
 	Max,
 	Min,
+	ModuloFake,
+	ModuloRemEuclid,
 	Multiply,
 	Negate,
 	// TODO: range: to/from? (aka ascending/descending)
@@ -204,6 +206,8 @@ impl From<&str> for Token {
 				// "map" => Map,
 				"max" => Max,
 				"min" => Min,
+				"mod" => ModuloRemEuclid,
+				"modf" => ModuloFake,
 				"mul" => Multiply,
 				"neg" => Negate,
 				"range0excl" => Range0Excluding,
@@ -466,6 +470,50 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			match top {
 				ArrInt(v) => {
 					program_stack.stack.push(Int(*v.iter().min().unwrap()));
+				}
+				_ => panic!()
+			}
+		}
+		ModuloFake => {
+			let a = program_stack.stack.pop().unwrap();
+			let b = program_stack.stack.last_mut().unwrap();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					*b %= a;
+				}
+				(Int(n), ArrInt(v)) => {
+					for el in v {
+						*el %= n;
+					}
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					for (a, b) in a.iter().zip(b) {
+						*b %= a;
+					}
+				}
+				_ => panic!()
+			}
+		}
+		ModuloRemEuclid => {
+			let a = program_stack.stack.pop().unwrap();
+			let b = program_stack.stack.last_mut().unwrap();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					*b = b.rem_euclid(a);
+				}
+				(Int(n), ArrInt(v)) => {
+					for el in v {
+						*el = el.rem_euclid(n);
+					}
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					for (a, b) in a.iter().zip(b) {
+						*b = b.rem_euclid(*a);
+					}
 				}
 				_ => panic!()
 			}
@@ -997,6 +1045,96 @@ mod program_exec {
 				assert_eq!(
 					eval("1"),
 					eval("1,2,3 min")
+				)
+			}
+		}
+		mod modulo_fake {
+			use super::*;
+			#[test]
+			fn _42__5() {
+				assert_eq!(
+					eval("2"),
+					eval("42 5 modf")
+				)
+			}
+			#[test]
+			fn _m42__5() {
+				assert_eq!(
+					eval("-2"),
+					eval("-42 5 modf")
+				)
+			}
+			#[test]
+			fn _10_20_30__7() {
+				assert_eq!(
+					eval("3,6,2"),
+					eval("10,20,30 7 modf")
+				)
+			}
+			#[test]
+			fn _m10_m20_m30__7() {
+				assert_eq!(
+					eval("-3,-6,-2"),
+					eval("-10,-20,-30 7 modf")
+				)
+			}
+			#[test]
+			fn _10_20_30__6_7_8() {
+				assert_eq!(
+					eval("4,6,6"),
+					eval("10,20,30 6,7,8 modf")
+				)
+			}
+			#[test]
+			fn _m10_m20_m30__6_7_8() {
+				assert_eq!(
+					eval("-4,-6,-6"),
+					eval("-10,-20,-30 6,7,8 modf")
+				)
+			}
+		}
+		mod modulo_rem_euclid {
+			use super::*;
+			#[test]
+			fn _42__5() {
+				assert_eq!(
+					eval("2"),
+					eval("42 5 mod")
+				)
+			}
+			#[test]
+			fn _m42__5() {
+				assert_eq!(
+					eval("3"),
+					eval("-42 5 mod")
+				)
+			}
+			#[test]
+			fn _10_20_30__7() {
+				assert_eq!(
+					eval("3,6,2"),
+					eval("10,20,30 7 mod")
+				)
+			}
+			#[test]
+			fn _m10_m20_m30__7() {
+				assert_eq!(
+					eval("4,1,5"),
+					eval("-10,-20,-30 7 mod")
+				)
+			}
+			#[test]
+			fn _10_20_30__6_7_8() {
+				assert_eq!(
+					eval("4,6,6"),
+					eval("10,20,30 6,7,8 mod")
+				)
+			}
+			#[test]
+			fn _m10_m20_m30__6_7_8() {
+				assert_eq!(
+					eval("2,1,2"),
+					eval("-10,-20,-30 6,7,8 mod")
 				)
 			}
 		}
