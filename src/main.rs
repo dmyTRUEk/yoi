@@ -133,6 +133,7 @@ impl From<&str> for StackElement {
 enum Token {
 	Literal(StackElement),
 
+	AtIndex,
 	Duplicate,
 	First,
 	IndexOfMaxFirst,
@@ -156,6 +157,7 @@ impl From<&str> for Token {
 		use Token::*;
 		// dbg!(token_str);
 		match token_str {
+			"at" => AtIndex,
 			"dup" => Duplicate,
 			"first" => First,
 			"imaxf" => IndexOfMaxFirst,
@@ -184,6 +186,16 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 	match token {
 		Literal(literal) => {
 			program_stack.stack.push(literal);
+		}
+		AtIndex => {
+			let i = program_stack.stack.pop().unwrap();
+			let v = program_stack.stack.pop().unwrap();
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(Int(v[i as usize]));
+				}
+				_ => panic!(),
+			}
 		}
 		Duplicate => {
 			program_stack.stack.push(program_stack.stack.last().unwrap().clone());
@@ -383,11 +395,36 @@ mod token_exec {
 
 
 
+#[allow(non_snake_case)]
 #[cfg(test)]
 mod program_exec {
 	use super::*;
 	mod token {
 		use super::*;
+		mod at_index {
+			use super::*;
+			#[test]
+			fn _10_20_30__0() {
+				assert_eq!(
+					eval("10"),
+					eval("10,20,30 0 at")
+				)
+			}
+			#[test]
+			fn _10_20_30__1() {
+				assert_eq!(
+					eval("20"),
+					eval("10,20,30 1 at")
+				)
+			}
+			#[test]
+			fn _10_20_30__2() {
+				assert_eq!(
+					eval("30"),
+					eval("10,20,30 2 at")
+				)
+			}
+		}
 		mod duplicate {
 			use super::*;
 			#[test]
