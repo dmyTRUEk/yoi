@@ -314,11 +314,17 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		AtIndex => {
-			let i = program_stack.stack.pop().unwrap();
-			let v = program_stack.stack.pop().unwrap();
-			match (i, v) {
+			let a = program_stack.stack.pop().unwrap();
+			let b = program_stack.stack.pop().unwrap();
+			match (a, b) {
 				(Int(i), ArrInt(v)) => {
 					program_stack.stack.push(Int(v[i as usize]));
+				}
+				(ArrInt(i), ArrInt(v)) => {
+					let res = i.into_iter().map(|i| {
+						v[i as usize]
+					}).collect();
+					program_stack.stack.push(ArrInt(res));
 				}
 				_ => panic!()
 			}
@@ -983,6 +989,13 @@ mod program_exec {
 				assert_eq!(
 					eval("30"),
 					eval("10,20,30 2 at")
+				)
+			}
+			#[test]
+			fn _10_20_30_40_50__1_2_4() {
+				assert_eq!(
+					eval("20,30,50"),
+					eval("10,20,30,40,50 1,2,4 at")
 				)
 			}
 		}
