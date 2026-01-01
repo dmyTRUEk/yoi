@@ -568,72 +568,81 @@ mod program_exec {
 				)
 			}
 		}
-		mod index_of_max_first {
+		mod index_of {
 			use super::*;
-			#[test]
-			fn _5_9_1_3_4_0_8_7_2_6() {
-				assert_eq!(
-					eval("1"),
-					eval("5,9,1,3,4,0,8,7,2,6 imaxf")
-				)
+			mod max {
+				use super::*;
+				mod first {
+					use super::*;
+					#[test]
+					fn _5_9_1_3_4_0_8_7_2_6() {
+						assert_eq!(
+							eval("1"),
+							eval("5,9,1,3,4,0,8,7,2,6 imaxf")
+						)
+					}
+					#[test]
+					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+						assert_eq!(
+							eval("1"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxf")
+						)
+					}
+				}
+				mod last {
+					use super::*;
+					#[test]
+					fn _5_9_1_3_4_0_8_7_2_6() {
+						assert_eq!(
+							eval("1"),
+							eval("5,9,1,3,4,0,8,7,2,6 imaxl")
+						)
+					}
+					#[test]
+					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+						assert_eq!(
+							eval("8"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxl")
+						)
+					}
+				}
 			}
-			#[test]
-			fn _5_9_1_0_3_4_0_8_9_7_2_6() {
-				assert_eq!(
-					eval("1"),
-					eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxf")
-				)
-			}
-		}
-		mod index_of_max_last {
-			use super::*;
-			#[test]
-			fn _5_9_1_3_4_0_8_7_2_6() {
-				assert_eq!(
-					eval("1"),
-					eval("5,9,1,3,4,0,8,7,2,6 imaxl")
-				)
-			}
-			#[test]
-			fn _5_9_1_0_3_4_0_8_9_7_2_6() {
-				assert_eq!(
-					eval("8"),
-					eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxl")
-				)
-			}
-		}
-		mod index_of_min_first {
-			use super::*;
-			#[test]
-			fn _5_9_1_3_4_0_8_7_2_6() {
-				assert_eq!(
-					eval("5"),
-					eval("5,9,1,3,4,0,8,7,2,6 iminf")
-				)
-			}
-			#[test]
-			fn _5_9_1_0_3_4_0_8_9_7_2_6() {
-				assert_eq!(
-					eval("3"),
-					eval("5,9,1,0,3,4,0,8,9,7,2,6 iminf")
-				)
-			}
-		}
-		mod index_of_min_last {
-			use super::*;
-			#[test]
-			fn _5_9_1_3_4_0_8_7_2_6() {
-				assert_eq!(
-					eval("5"),
-					eval("5,9,1,3,4,0,8,7,2,6 iminl")
-				)
-			}
-			#[test]
-			fn _5_9_1_0_3_4_0_8_9_7_2_6() {
-				assert_eq!(
-					eval("6"),
-					eval("5,9,1,0,3,4,0,8,9,7,2,6 iminl")
-				)
+			mod min {
+				use super::*;
+				mod first {
+					use super::*;
+					#[test]
+					fn _5_9_1_3_4_0_8_7_2_6() {
+						assert_eq!(
+							eval("5"),
+							eval("5,9,1,3,4,0,8,7,2,6 iminf")
+						)
+					}
+					#[test]
+					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+						assert_eq!(
+							eval("3"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 iminf")
+						)
+					}
+				}
+				mod last {
+					use super::*;
+					#[test]
+					fn _5_9_1_3_4_0_8_7_2_6() {
+						assert_eq!(
+							eval("5"),
+							eval("5,9,1,3,4,0,8,7,2,6 iminl")
+						)
+					}
+					#[test]
+					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+						assert_eq!(
+							eval("6"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 iminl")
+						)
+					}
+				}
 			}
 		}
 		mod join {
