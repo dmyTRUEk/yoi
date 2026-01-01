@@ -52,6 +52,7 @@ fn main() {
 fn eval(program_str: &str) -> ProgramStack {
 	let tokens: Vec<Token> = program_str
 		.split(" ")
+		.filter(|s| !s.is_empty())
 		.map(Token::from)
 		.collect();
 
@@ -125,7 +126,7 @@ impl From<&str> for StackElement {
 			)
 		}
 		else {
-			unimplemented!("{s}")
+			unimplemented!("`{s}`")
 		}
 	}
 }
@@ -1004,7 +1005,7 @@ mod program_exec {
 			fn _0__1__2__3__4__5() {
 				assert_eq!(
 					eval("0 1 5 2 3 4 5"),
-					eval("0 1 2 3 4 5 2 dupto")
+					eval("0 1 2 3 4 5  2 dupto")
 				)
 			}
 		}
@@ -1282,7 +1283,7 @@ mod program_exec {
 			fn _0__1__2__3__4__5() {
 				assert_eq!(
 					eval("0 1 5 2 3 4"),
-					eval("0 1 2 3 4 5 2 moveto")
+					eval("0 1 2 3 4 5  2 moveto")
 				)
 			}
 		}
