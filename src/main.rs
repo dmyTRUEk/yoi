@@ -149,6 +149,7 @@ enum Token {
 	Duplicate,
 	DuplicateFrom, // index in stack
 	DuplicateTo, // index in stack
+	DuplicateToBottom,
 	First,
 	Head, // everything but last
 	Increase,
@@ -211,6 +212,7 @@ impl From<&str> for Token {
 				"dup" => Duplicate,
 				"dupfrom" => DuplicateFrom,
 				"dupto" => DuplicateTo,
+				"duptobottom" => DuplicateToBottom,
 				"first" => First,
 				"head" => Head,
 				"imaxf" => IndexOfMaxFirst,
@@ -386,6 +388,12 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				}
 				_ => panic!()
 			}
+		}
+		DuplicateToBottom => {
+			program_stack.stack.insert(
+				0,
+				program_stack.stack.last().unwrap().clone()
+			);
 		}
 		First => {
 			let v = program_stack.stack.pop().unwrap();
@@ -1041,6 +1049,16 @@ mod program_exec {
 				assert_eq!(
 					eval("0 1 5 2 3 4 5"),
 					eval("0 1 2 3 4 5  2 dupto")
+				)
+			}
+		}
+		mod duplicate_to_bottom {
+			use super::*;
+			#[test]
+			fn _0__1__2__3__4__5() {
+				assert_eq!(
+					eval("5 0 1 2 3 4 5"),
+					eval("0 1 2 3 4 5  duptobottom")
 				)
 			}
 		}
