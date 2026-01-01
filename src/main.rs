@@ -160,6 +160,7 @@ enum Token {
 	IndexOfMinFirst,
 	IndexOfMinLast,
 	Join,
+	JoinDigits,
 	Last,
 	// Map,
 	Max,
@@ -226,6 +227,7 @@ impl From<&str> for Token {
 				"iminl" => IndexOfMinLast,
 				"inc" => Increase,
 				"join" => Join,
+				"joindigits" => JoinDigits,
 				"last" => Last,
 				// "map" => Map,
 				"max" => Max,
@@ -521,6 +523,20 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			};
 			program_stack.stack.push(new_top);
+		}
+		JoinDigits => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				ArrInt(v) => {
+					let mut n = 0;
+					for digit in v {
+						n *= 10;
+						n += digit;
+					}
+					program_stack.stack.push(Int(n));
+				}
+				_ => panic!()
+			}
 		}
 		Head => {
 			let v = program_stack.stack.last_mut().unwrap();
@@ -1235,6 +1251,16 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3"),
 					eval("1 2,3 join")
+				)
+			}
+		}
+		mod join_digits {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("123"),
+					eval("1,2,3 joindigits")
 				)
 			}
 		}
