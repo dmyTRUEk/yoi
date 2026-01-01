@@ -136,6 +136,7 @@ impl From<&str> for StackElement {
 enum Token {
 	Literal(StackElement),
 
+	Abs,
 	AtIndex,
 	Digits,
 	Duplicate,
@@ -167,6 +168,7 @@ impl From<&str> for Token {
 		}
 		else {
 			match token_str {
+				"abs" => Abs,
 				"at" => AtIndex,
 				"digits" => Digits,
 				"dup" => Duplicate,
@@ -204,6 +206,20 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		// TokenLiteral(_token) => { // TODO: process Literal(Token) somehow?
 		// 	// nothing
 		// }
+		Abs => {
+			let top = program_stack.stack.last_mut().unwrap();
+			match top {
+				Int(n) => {
+					*n = n.abs();
+				}
+				ArrInt(v) => {
+					for el in v {
+						*el = el.abs();
+					}
+				}
+				TokenLiteral(_) => panic!(),
+			}
+		}
 		AtIndex => {
 			let i = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
@@ -467,6 +483,30 @@ mod program_exec {
 	use super::*;
 	mod token {
 		use super::*;
+		mod abs {
+			use super::*;
+			#[test]
+			fn int_pos() {
+				assert_eq!(
+					eval("42"),
+					eval("42 abs")
+				)
+			}
+			#[test]
+			fn int_neg() {
+				assert_eq!(
+					eval("42"),
+					eval("-42 abs")
+				)
+			}
+			#[test]
+			fn vi() {
+				assert_eq!(
+					eval("1,2,3"),
+					eval("-1,2,-3 abs")
+				)
+			}
+		}
 		mod at_index {
 			use super::*;
 			#[test]
