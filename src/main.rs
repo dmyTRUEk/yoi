@@ -132,6 +132,10 @@ enum Token {
 	Literal(StackElement),
 
 	Duplicate,
+	IndexOfMaxFirst,
+	IndexOfMaxLast,
+	IndexOfMinFirst,
+	IndexOfMinLast,
 	Join,
 	Max,
 	Min,
@@ -146,6 +150,10 @@ impl From<&str> for Token {
 		// dbg!(token_str);
 		match token_str {
 			"dup" => Duplicate,
+			"imaxf" => IndexOfMaxFirst,
+			"imaxl" => IndexOfMaxLast,
+			"iminf" => IndexOfMinFirst,
+			"iminl" => IndexOfMinLast,
 			"join" => Join,
 			"max" => Max,
 			"min" => Min,
@@ -169,6 +177,74 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		}
 		Duplicate => {
 			program_stack.stack.push(program_stack.stack.last().unwrap().clone());
+		}
+		IndexOfMaxFirst => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(_) => panic!(),
+				VecInt(v) => {
+					let mut index_of_max_first = 0;
+					let (mut max, v) = v.split_first().unwrap();
+					for (i, el) in v.iter().enumerate() {
+						if el > max {
+							max = el;
+							index_of_max_first = i + 1; // +1 bc we popped first element
+						}
+					}
+					program_stack.stack.push(Int(index_of_max_first as i64));
+				}
+			}
+		}
+		IndexOfMaxLast => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(_) => panic!(),
+				VecInt(v) => {
+					let mut index_of_max_last = 0;
+					let (mut max, v) = v.split_first().unwrap();
+					for (i, el) in v.iter().enumerate() {
+						if el >= max {
+							max = el;
+							index_of_max_last = i + 1; // +1 bc we popped first element
+						}
+					}
+					program_stack.stack.push(Int(index_of_max_last as i64));
+				}
+			}
+		}
+		IndexOfMinFirst => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(_) => panic!(),
+				VecInt(v) => {
+					let mut index_of_min_first = 0;
+					let (mut min, v) = v.split_first().unwrap();
+					for (i, el) in v.iter().enumerate() {
+						if el < min {
+							min = el;
+							index_of_min_first = i + 1; // +1 bc we popped first element
+						}
+					}
+					program_stack.stack.push(Int(index_of_min_first as i64));
+				}
+			}
+		}
+		IndexOfMinLast => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(_) => panic!(),
+				VecInt(v) => {
+					let mut index_of_min_last = 0;
+					let (mut min, v) = v.split_first().unwrap();
+					for (i, el) in v.iter().enumerate() {
+						if el <= min {
+							min = el;
+							index_of_min_last = i + 1; // +1 bc we popped first element
+						}
+					}
+					program_stack.stack.push(Int(index_of_min_last as i64));
+				}
+			}
 		}
 		Join => {
 			let top = program_stack.stack.pop().unwrap();
@@ -294,6 +370,74 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3 1,2,3"),
 					eval("1,2,3 dup")
+				)
+			}
+		}
+		mod index_of_max_first {
+			use super::*;
+			#[test]
+			fn _5_9_1_3_4_0_8_7_2_6() {
+				assert_eq!(
+					eval("1"),
+					eval("5,9,1,3,4,0,8,7,2,6 imaxf")
+				)
+			}
+			#[test]
+			fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+				assert_eq!(
+					eval("1"),
+					eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxf")
+				)
+			}
+		}
+		mod index_of_max_last {
+			use super::*;
+			#[test]
+			fn _5_9_1_3_4_0_8_7_2_6() {
+				assert_eq!(
+					eval("1"),
+					eval("5,9,1,3,4,0,8,7,2,6 imaxl")
+				)
+			}
+			#[test]
+			fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+				assert_eq!(
+					eval("8"),
+					eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxl")
+				)
+			}
+		}
+		mod index_of_min_first {
+			use super::*;
+			#[test]
+			fn _5_9_1_3_4_0_8_7_2_6() {
+				assert_eq!(
+					eval("5"),
+					eval("5,9,1,3,4,0,8,7,2,6 iminf")
+				)
+			}
+			#[test]
+			fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+				assert_eq!(
+					eval("3"),
+					eval("5,9,1,0,3,4,0,8,9,7,2,6 iminf")
+				)
+			}
+		}
+		mod index_of_min_last {
+			use super::*;
+			#[test]
+			fn _5_9_1_3_4_0_8_7_2_6() {
+				assert_eq!(
+					eval("5"),
+					eval("5,9,1,3,4,0,8,7,2,6 iminl")
+				)
+			}
+			#[test]
+			fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+				assert_eq!(
+					eval("6"),
+					eval("5,9,1,0,3,4,0,8,9,7,2,6 iminl")
 				)
 			}
 		}
