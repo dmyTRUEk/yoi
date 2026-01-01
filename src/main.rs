@@ -153,6 +153,11 @@ enum Token {
 	Max,
 	Min,
 	Negate,
+	// TODO: range: to/from? (aka ascending/descending)
+	Range0Excluding,
+	Range0Including,
+	Range1Excluding,
+	Range1Including,
 	Reverse,
 	// TODO: SliceArr 0,1,2,3,4,5,6 2,5 slicearr -> 2,3,4,5
 	SliceExcludingExcluding,
@@ -196,6 +201,10 @@ impl From<&str> for Token {
 				"max" => Max,
 				"min" => Min,
 				"neg" => Negate,
+				"range0excl" => Range0Excluding,
+				"range0incl" => Range0Including,
+				"range1excl" => Range1Excluding,
+				"range1incl" => Range1Including,
 				"rev" => Reverse,
 				"sliceexclexcl" => SliceExcludingExcluding,
 				"sliceexclincl" => SliceExcludingIncluding,
@@ -445,6 +454,42 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					}
 				}
 				TokenLiteral(_) => panic!()
+			}
+		}
+		Range0Excluding => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(ArrInt( (0..n).collect() ));
+				}
+				_ => panic!()
+			}
+		}
+		Range0Including => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(ArrInt( (0..=n).collect() ));
+				}
+				_ => panic!()
+			}
+		}
+		Range1Excluding => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(ArrInt( (1..n).collect() ));
+				}
+				_ => panic!()
+			}
+		}
+		Range1Including => {
+			let top = program_stack.stack.pop().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(ArrInt( (1..=n).collect() ));
+				}
+				_ => panic!()
 			}
 		}
 		Reverse => {
@@ -874,6 +919,55 @@ mod program_exec {
 					eval("-1,-2,-3"),
 					eval("1,2,3 neg")
 				)
+			}
+		}
+		mod range {
+			use super::*;
+			mod _0 {
+				use super::*;
+				mod excluding {
+					use super::*;
+					#[test]
+					fn _5() {
+						assert_eq!(
+							eval("0,1,2,3,4"),
+							eval("5 range0excl")
+						)
+					}
+				}
+				mod including {
+					use super::*;
+					#[test]
+					fn _5() {
+						assert_eq!(
+							eval("0,1,2,3,4,5"),
+							eval("5 range0incl")
+						)
+					}
+				}
+			}
+			mod _1 {
+				use super::*;
+				mod excluding {
+					use super::*;
+					#[test]
+					fn _5() {
+						assert_eq!(
+							eval("1,2,3,4"),
+							eval("5 range1excl")
+						)
+					}
+				}
+				mod including {
+					use super::*;
+					#[test]
+					fn _5() {
+						assert_eq!(
+							eval("1,2,3,4,5"),
+							eval("5 range1incl")
+						)
+					}
+				}
 			}
 		}
 		mod reverse {
