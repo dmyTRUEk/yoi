@@ -170,7 +170,14 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					pt.append(&mut t);
 					VecInt(pt)
 				}
-				_ => panic!()
+				(VecInt(mut pt), Int(t)) => {
+					pt.push(t);
+					VecInt(pt)
+				}
+				(Int(pt), VecInt(mut t)) => {
+					t.insert(0, pt);
+					VecInt(t)
+				}
 			};
 			program_stack.stack.push(new_top);
 		}
@@ -249,6 +256,20 @@ mod program_exec {
 				assert_eq!(
 					eval("1,2,3,4"),
 					eval("1,2 3,4 join")
+				)
+			}
+			#[test]
+			fn vi_int() {
+				assert_eq!(
+					eval("1,2,3"),
+					eval("1,2 3 join")
+				)
+			}
+			#[test]
+			fn int_vi() {
+				assert_eq!(
+					eval("1,2,3"),
+					eval("1 2,3 join")
 				)
 			}
 		}
