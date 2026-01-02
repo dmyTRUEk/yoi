@@ -453,7 +453,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		}
 		AtIndex => {
 			let a = program_stack.stack.last().unwrap();
-			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			let b = &program_stack.stack[program_stack.stack.len()-2];
 			match (a, b) {
 				(Int(i), ArrInt(v)) => {
 					program_stack.stack.push(Int(v[*i as usize]));
@@ -549,7 +549,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		}
 		DivideInt => {
 			let a = program_stack.stack.last().unwrap();
-			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			let b = &program_stack.stack[program_stack.stack.len()-2];
 			match (a, b) {
 				(Int(a), Int(b)) => {
 					program_stack.stack.push(Int(b / a));
@@ -972,7 +972,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		}
 		ModuloFake => {
 			let a = program_stack.stack.last().unwrap();
-			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			let b = &program_stack.stack[program_stack.stack.len()-2];
 			match (a, b) {
 				(Int(a), Int(b)) => {
 					program_stack.stack.push(Int(b % a));
@@ -1016,7 +1016,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		}
 		ModuloRemEuclid => {
 			let a = program_stack.stack.last().unwrap();
-			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			let b = &program_stack.stack[program_stack.stack.len()-2];
 			match (a, b) {
 				(Int(a), Int(b)) => {
 					program_stack.stack.push(Int(b.rem_euclid(*a)));
@@ -1084,7 +1084,7 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		}
 		Multiply => {
 			let a = program_stack.stack.last().unwrap();
-			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			let b = &program_stack.stack[program_stack.stack.len()-2];
 			match (a, b) {
 				(Int(a), Int(b)) => {
 					program_stack.stack.push(Int(b * a));
