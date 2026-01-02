@@ -158,6 +158,8 @@ enum Token {
 	// TODO: rename to copy?
 	DuplicateFromIndex,
 	// DuplicateFromIndexX,
+	DuplicateStack, // 1 2 -> 1 2 1 2
+	// DuplicateStackX, // noop
 	DuplicateToIndex,
 	// DuplicateToIndexX,
 	DuplicateToBottom,
@@ -233,6 +235,8 @@ enum Token {
 	Range1IncludingX,
 	Reverse,
 	ReverseX,
+	ReverseStack, // 1 2 3 -> 3 2 1
+	ReverseStackX,
 	// TODO: SliceArr 0,1,2,3,4,5,6 2,5 slicearr -> 2,3,4,5
 	SliceExcludingExcluding,
 	SliceExcludingExcludingX,
@@ -306,6 +310,7 @@ impl From<&str> for Token {
 				"dup" => DuplicateTop,
 				// TODO: use `-` to separate words?
 				"dupfrom" => DuplicateFromIndex,
+				"dupstack" => DuplicateStack,
 				"dupto" => DuplicateToIndex,
 				"duptobottom" => DuplicateToBottom,
 				"dupunder" => DuplicateUnder,
@@ -368,6 +373,8 @@ impl From<&str> for Token {
 				"range1incl!" => Range1IncludingX,
 				"rev" => Reverse,
 				"rev!" => ReverseX,
+				"revstack" => ReverseStack,
+				"revstack!" => ReverseStackX,
 				"sliceexclexcl" => SliceExcludingExcluding,
 				"sliceexclexcl!" => SliceExcludingExcludingX,
 				"sliceexclincl" => SliceExcludingIncluding,
@@ -668,6 +675,10 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				}
 				_ => panic!()
 			}
+		}
+		DuplicateStack => {
+			let mut stack = program_stack.stack.clone();
+			program_stack.stack.append(&mut stack);
 		}
 		DuplicateToIndex => {
 			let i = program_stack.stack.pop().unwrap();
@@ -1473,6 +1484,14 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
+		ReverseStack => {
+			let mut stack = program_stack.stack.clone();
+			stack.reverse();
+			program_stack.stack.append(&mut stack);
+		}
+		ReverseStackX => {
+			program_stack.stack.reverse();
+		}
 		SliceExcludingExcluding => {
 			let index_to = program_stack.stack.last().unwrap();
 			let index_from = &program_stack.stack[program_stack.stack.len()-2];
@@ -2163,6 +2182,16 @@ mod program_exec {
 					assert_eq!(
 						eval("0 1 2 3 4 5 2"),
 						eval("0 1 2 3 4 5  2 dupfrom")
+					)
+				}
+			}
+			mod stack {
+				use super::*;
+				#[test]
+				fn _1__2__3() {
+					assert_eq!(
+						eval("1 2 3 1 2 3"),
+						eval("1 2 3 dupstack")
 					)
 				}
 			}
@@ -3318,6 +3347,26 @@ mod program_exec {
 				assert_eq!(
 					eval("3,2,1"),
 					eval("1,2,3 rev!")
+				)
+			}
+		}
+		mod reverse_stack {
+			use super::*;
+			#[test]
+			fn _1__2__3() {
+				assert_eq!(
+					eval("1 2 3 3 2 1"),
+					eval("1 2 3 revstack")
+				)
+			}
+		}
+		mod reverse_stack_x {
+			use super::*;
+			#[test]
+			fn _1__2__3() {
+				assert_eq!(
+					eval("3 2 1"),
+					eval("1 2 3 revstack!")
 				)
 			}
 		}
