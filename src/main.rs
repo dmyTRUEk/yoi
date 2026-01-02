@@ -141,61 +141,117 @@ enum Token {
 	// TODO: add combinators: https://combinatorylogic.com/table.html
 
 	Abs,
+	AbsX,
 	Add,
+	AddX,
 	AtIndex,
+	AtIndexX,
+	// Bottom, // remove everything but bottom of the stack // TODO
 	Decrease,
+	DecreaseX,
 	Digits,
+	DigitsX,
 	DivideInt,
+	DivideIntX,
 	// TODO: rename to copy?
 	DuplicateFromIndex,
+	// DuplicateFromIndexX,
 	DuplicateToIndex,
+	// DuplicateToIndexX,
 	DuplicateToBottom,
+	// DuplicateToBottomX,
 	DuplicateTop,
+	// DuplicateTopX,
 	DuplicateUnder,
+	// DuplicateUnderX,
 	First,
+	FirstX,
 	Head, // everything but last
+	HeadX,
 	Increase,
+	IncreaseX,
 	IndexOfMaxFirst,
+	IndexOfMaxFirstX,
 	IndexOfMaxLast,
+	IndexOfMaxLastX,
 	IndexOfMinFirst,
+	IndexOfMinFirstX,
 	IndexOfMinLast,
+	IndexOfMinLastX,
+	// InsertAtVI, // 0,1,2,3  5 2 insertat -> 0,1,5,2,3
+	// InsertAtIV, // 0,1,2,3  2 5 insertat -> 0,1,5,2,3
+	// IsEqual, // TODO
+	// IsNotEqual, // TODO
 	Join,
+	JoinX,
 	JoinDigits,
+	JoinDigitsX,
 	Last,
+	LastX,
 	// Map,
 	Max,
+	MaxX,
 	Min,
+	MinX,
 	ModuloFake,
+	ModuloFakeX,
 	ModuloRemEuclid,
+	ModuloRemEuclidX,
+	// TODO: unify/rename with dup! ? (e2dc6d)
 	//Move, // noop
 	MoveFromIndex,
 	MoveToIndex,
 	MoveToBottom,
 	Multiply,
+	MultiplyX,
 	Negate,
+	NegateX,
+	// Pop, // TODO
 	// TODO: range: to/from? (aka ascending/descending)
 	Range0Excluding,
+	Range0ExcludingX,
 	Range0Including,
+	Range0IncludingX,
 	Range1Excluding,
+	Range1ExcludingX,
 	Range1Including,
+	Range1IncludingX,
 	Reverse,
+	ReverseX,
 	// TODO: SliceArr 0,1,2,3,4,5,6 2,5 slicearr -> 2,3,4,5
 	SliceExcludingExcluding,
+	SliceExcludingExcludingX,
 	SliceExcludingIncluding,
+	SliceExcludingIncludingX,
 	SliceExcludingFrom,
+	SliceExcludingFromX,
 	SliceExcludingTo,
+	SliceExcludingToX,
 	SliceIncludingExcluding,
+	SliceIncludingExcludingX,
 	SliceIncludingIncluding,
+	SliceIncludingIncludingX,
 	SliceIncludingFrom,
+	SliceIncludingFromX,
 	SliceIncludingTo,
+	SliceIncludingToX,
 	Sort,
+	SortX,
+	// Split, // [1,2,3] -> 1 2 3
+	// SplitAtValue, // TODO
+	// SplitAtIndex, // TODO
+	// SplitAtFunction, // TODO?
+	// Sqrt, // TODO: for ints: ceil/floor?
 	Subtract,
+	SubtractX,
 	Swap,
 	SwapUnder, // swap two elements under top
 	SwapWithIndex,
 	// SwapN - swap with top with nth / n from top
 	// SwapNM
 	Tail, // everything but first
+	TailX,
+	// Top, // remove everything but top of the stack // TODO
 }
 impl Token {
 }
@@ -210,56 +266,96 @@ impl From<&str> for Token {
 		else {
 			match token_str {
 				"abs" => Abs,
+				"abs!" => AbsX,
 				"add" => Add,
+				"add!" => AddX,
 				"at" => AtIndex,
+				"at!" => AtIndexX,
 				"dec" => Decrease,
+				"dec!" => DecreaseX,
 				"digits" => Digits,
+				"digits!" => DigitsX,
 				"divint" => DivideInt,
+				"divint!" => DivideIntX,
 				"dup" => DuplicateTop,
+				// TODO: use `-` to separate words?
 				"dupfrom" => DuplicateFromIndex,
 				"dupto" => DuplicateToIndex,
 				"duptobottom" => DuplicateToBottom,
 				"dupunder" => DuplicateUnder,
 				"first" => First,
+				"first!" => FirstX,
 				"head" => Head,
+				"head!" => HeadX,
 				"imaxf" => IndexOfMaxFirst,
+				"imaxf!" => IndexOfMaxFirstX,
 				"imaxl" => IndexOfMaxLast,
+				"imaxl!" => IndexOfMaxLastX,
 				"iminf" => IndexOfMinFirst,
+				"iminf!" => IndexOfMinFirstX,
 				"iminl" => IndexOfMinLast,
+				"iminl!" => IndexOfMinLastX,
 				"inc" => Increase,
+				"inc!" => IncreaseX,
 				"join" => Join,
+				"join!" => JoinX,
 				"joindigits" => JoinDigits,
+				"joindigits!" => JoinDigitsX,
 				"last" => Last,
+				"last!" => LastX,
 				// "map" => Map,
 				"max" => Max,
+				"max!" => MaxX,
 				"min" => Min,
+				"min!" => MinX,
 				"mod" => ModuloRemEuclid,
+				"mod!" => ModuloRemEuclidX,
 				"modf" => ModuloFake,
+				"modf!" => ModuloFakeX,
+				// TODO: unify/rename with dup! ? (e2dc6d)
 				//"move" => Move, // noop
 				"movefrom" => MoveFromIndex,
 				"moveto" => MoveToIndex,
 				"movetobottom" => MoveToBottom,
 				"mul" => Multiply,
+				"mul!" => MultiplyX,
 				"neg" => Negate,
+				"neg!" => NegateX,
 				"range0excl" => Range0Excluding,
+				"range0excl!" => Range0ExcludingX,
 				"range0incl" => Range0Including,
+				"range0incl!" => Range0IncludingX,
 				"range1excl" => Range1Excluding,
+				"range1excl!" => Range1ExcludingX,
 				"range1incl" => Range1Including,
+				"range1incl!" => Range1IncludingX,
 				"rev" => Reverse,
+				"rev!" => ReverseX,
 				"sliceexclexcl" => SliceExcludingExcluding,
+				"sliceexclexcl!" => SliceExcludingExcludingX,
 				"sliceexclincl" => SliceExcludingIncluding,
+				"sliceexclincl!" => SliceExcludingIncludingX,
 				"sliceexclfrom" => SliceExcludingFrom,
+				"sliceexclfrom!" => SliceExcludingFromX,
 				"sliceexclto" => SliceExcludingTo,
+				"sliceexclto!" => SliceExcludingToX,
 				"sliceinclexcl" => SliceIncludingExcluding,
+				"sliceinclexcl!" => SliceIncludingExcludingX,
 				"sliceinclincl" => SliceIncludingIncluding,
+				"sliceinclincl!" => SliceIncludingIncludingX,
 				"sliceinclfrom" => SliceIncludingFrom,
+				"sliceinclfrom!" => SliceIncludingFromX,
 				"sliceinclto" => SliceIncludingTo,
+				"sliceinclto!" => SliceIncludingToX,
 				"sort" => Sort,
+				"sort!" => SortX,
 				"sub" => Subtract,
+				"sub!" => SubtractX,
 				"swap" => Swap,
 				"swapunder" => SwapUnder,
 				"swapwith" => SwapWithIndex,
 				"tail" => Tail,
+				"tail!" => TailX,
 				_ => Literal(StackElement::from(token_str))
 			}
 		}
@@ -273,6 +369,8 @@ impl From<&str> for Token {
 fn exec(program_stack: &mut ProgramStack, token: Token) {
 	use StackElement::*;
 	use Token::*;
+	// TODO(refactor): `let stack = &mut program_stack.stack;`
+	// TODO(refactor): let a=...; let b=...; - swap `b` and `a`, to read l->r?
 	match token {
 		Literal(literal) => {
 			program_stack.stack.push(literal);
@@ -281,6 +379,19 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		// 	// nothing
 		// }
 		Abs => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(Int(n.abs()));
+				}
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|n| n.abs()).collect()
+					));
+				}
+			}
+		}
+		AbsX => {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
 				Int(n) => {
@@ -294,6 +405,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Add => {
+			let a = program_stack.stack.last().unwrap();
+			let b = &program_stack.stack[program_stack.stack.len()-2];
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					program_stack.stack.push(Int(a + b));
+				}
+				(Int(n), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| el + n).collect()
+					));
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					program_stack.stack.push(ArrInt(
+						a.iter().zip(b).map(|(a, b)| a + b).collect()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		AddX => {
 			let a = program_stack.stack.pop().unwrap();
 			let b = program_stack.stack.last_mut().unwrap();
 			match (a, b) {
@@ -316,6 +449,23 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		AtIndex => {
+			let a = program_stack.stack.last().unwrap();
+			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			match (a, b) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(Int(v[*i as usize]));
+				}
+				(ArrInt(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(
+						i.iter().map(|i| {
+							v[*i as usize]
+						}).collect()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		AtIndexX => {
 			let a = program_stack.stack.pop().unwrap();
 			let b = program_stack.stack.pop().unwrap();
 			match (a, b) {
@@ -323,24 +473,51 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					program_stack.stack.push(Int(v[i as usize]));
 				}
 				(ArrInt(i), ArrInt(v)) => {
-					let res = i.into_iter().map(|i| {
-						v[i as usize]
-					}).collect();
-					program_stack.stack.push(ArrInt(res));
+					program_stack.stack.push(ArrInt(
+						i.into_iter().map(|i| {
+							v[i as usize]
+						}).collect()
+					));
 				}
 				_ => panic!()
 			}
 		}
 		Decrease => {
+			let i = program_stack.stack.last().unwrap();
+			match i {
+				Int(i) => {
+					program_stack.stack.push(Int(i - 1));
+				}
+				_ => todo!()
+			}
+		}
+		DecreaseX => {
 			let i = program_stack.stack.last_mut().unwrap();
 			match i {
 				Int(i) => {
 					*i -= 1;
 				}
-				_ => panic!()
+				_ => todo!()
 			}
 		}
 		Digits => {
+			let i = program_stack.stack.last().unwrap();
+			match i {
+				Int(i) => {
+					let mut i = *i;
+					assert!(i >= 0);
+					let mut digits = vec![];
+					while i > 0 {
+						digits.push(i % 10);
+						i /= 10;
+					}
+					digits.reverse();
+					program_stack.stack.push(ArrInt(digits));
+				}
+				_ => panic!()
+			}
+		}
+		DigitsX => {
 			let i = program_stack.stack.pop().unwrap();
 			match i {
 				Int(mut i) => {
@@ -357,6 +534,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		DivideInt => {
+			let a = program_stack.stack.last().unwrap();
+			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					program_stack.stack.push(Int(b / a));
+				}
+				(Int(n), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| el / n).collect()
+					));
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					program_stack.stack.push(ArrInt(
+						a.iter().zip(b).map(|(a, b)| b / a).collect()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		DivideIntX => {
 			let a = program_stack.stack.pop().unwrap();
 			let b = program_stack.stack.last_mut().unwrap();
 			match (a, b) {
@@ -416,6 +615,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			program_stack.stack.insert(len-1, pretop);
 		}
 		First => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(Int(*v.first().unwrap()));
+				}
+				_ => panic!()
+			}
+		}
+		FirstX => {
 			let v = program_stack.stack.pop().unwrap();
 			match v {
 				ArrInt(v) => {
@@ -425,15 +633,41 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Increase => {
+			let i = program_stack.stack.last().unwrap();
+			match i {
+				Int(i) => {
+					program_stack.stack.push(Int(i + 1));
+				}
+				_ => todo!()
+			}
+		}
+		IncreaseX => {
 			let i = program_stack.stack.last_mut().unwrap();
 			match i {
 				Int(i) => {
 					*i += 1;
 				}
-				_ => panic!()
+				_ => todo!()
 			}
 		}
 		IndexOfMaxFirst => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				ArrInt(v) => {
+					let mut index_of_max_first = 0;
+					let (mut max, v) = v.split_first().unwrap();
+					for (i, el) in v.iter().enumerate() {
+						if el > max {
+							max = el;
+							index_of_max_first = i + 1; // +1 bc we popped first element
+						}
+					}
+					program_stack.stack.push(Int(index_of_max_first as i64));
+				}
+				_ => panic!()
+			}
+		}
+		IndexOfMaxFirstX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				ArrInt(v) => {
@@ -451,6 +685,23 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		IndexOfMaxLast => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				ArrInt(v) => {
+					let mut index_of_max_last = 0;
+					let (mut max, v) = v.split_first().unwrap();
+					for (i, el) in v.iter().enumerate() {
+						if el >= max {
+							max = el;
+							index_of_max_last = i + 1; // +1 bc we popped first element
+						}
+					}
+					program_stack.stack.push(Int(index_of_max_last as i64));
+				}
+				_ => panic!()
+			}
+		}
+		IndexOfMaxLastX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				ArrInt(v) => {
@@ -468,6 +719,23 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		IndexOfMinFirst => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				ArrInt(v) => {
+					let mut index_of_min_first = 0;
+					let (mut min, v) = v.split_first().unwrap();
+					for (i, el) in v.iter().enumerate() {
+						if el < min {
+							min = el;
+							index_of_min_first = i + 1; // +1 bc we popped first element
+						}
+					}
+					program_stack.stack.push(Int(index_of_min_first as i64));
+				}
+				_ => panic!()
+			}
+		}
+		IndexOfMinFirstX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				ArrInt(v) => {
@@ -485,6 +753,23 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		IndexOfMinLast => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				ArrInt(v) => {
+					let mut index_of_min_last = 0;
+					let (mut min, v) = v.split_first().unwrap();
+					for (i, el) in v.iter().enumerate() {
+						if el <= min {
+							min = el;
+							index_of_min_last = i + 1; // +1 bc we popped first element
+						}
+					}
+					program_stack.stack.push(Int(index_of_min_last as i64));
+				}
+				_ => panic!()
+			}
+		}
+		IndexOfMinLastX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				ArrInt(v) => {
@@ -502,6 +787,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Join => {
+			let top = program_stack.stack.last().unwrap().clone();
+			let pretop = program_stack.stack[program_stack.stack.len()-2].clone();
+			let new_top = match (pretop, top) {
+				(Int(pt), Int(t)) => {
+					ArrInt(vec![pt, t])
+				}
+				(ArrInt(mut pt), ArrInt(mut t)) => {
+					pt.append(&mut t);
+					ArrInt(pt)
+				}
+				(ArrInt(mut pt), Int(t)) => {
+					pt.push(t);
+					ArrInt(pt)
+				}
+				(Int(pt), ArrInt(mut t)) => {
+					t.insert(0, pt);
+					ArrInt(t)
+				}
+			};
+			program_stack.stack.push(new_top);
+		}
+		JoinX => {
 			let top = program_stack.stack.pop().unwrap();
 			let pretop = program_stack.stack.pop().unwrap();
 			let new_top = match (pretop, top) {
@@ -524,6 +831,20 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			program_stack.stack.push(new_top);
 		}
 		JoinDigits => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					let mut n = 0;
+					for digit in v {
+						n *= 10;
+						n += digit;
+					}
+					program_stack.stack.push(Int(n));
+				}
+				_ => panic!()
+			}
+		}
+		JoinDigitsX => {
 			let v = program_stack.stack.pop().unwrap();
 			match v {
 				ArrInt(v) => {
@@ -538,6 +859,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Head => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(v[..v.len()-1].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		HeadX => {
 			let v = program_stack.stack.last_mut().unwrap();
 			match v {
 				ArrInt(v) => {
@@ -547,6 +877,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Last => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(Int(*v.last().unwrap()));
+				}
+				_ => panic!()
+			}
+		}
+		LastX => {
 			let v = program_stack.stack.pop().unwrap();
 			match v {
 				ArrInt(v) => {
@@ -574,6 +913,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		// 	}
 		// }
 		Max => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				ArrInt(v) => {
+					program_stack.stack.push(Int(*v.iter().max().unwrap()));
+				}
+				_ => panic!()
+			}
+		}
+		MaxX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				ArrInt(v) => {
@@ -583,6 +931,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Min => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				ArrInt(v) => {
+					program_stack.stack.push(Int(*v.iter().min().unwrap()));
+				}
+				_ => panic!()
+			}
+		}
+		MinX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				ArrInt(v) => {
@@ -592,6 +949,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		ModuloFake => {
+			let a = program_stack.stack.last().unwrap();
+			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					program_stack.stack.push(Int(b % a));
+				}
+				(Int(n), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| el % n).collect()
+					));
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					program_stack.stack.push(ArrInt(
+						a.iter().zip(b).map(|(a, b)| b % a).collect()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		ModuloFakeX => {
 			let a = program_stack.stack.pop().unwrap();
 			let b = program_stack.stack.last_mut().unwrap();
 			match (a, b) {
@@ -614,6 +993,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		ModuloRemEuclid => {
+			let a = program_stack.stack.last().unwrap();
+			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					program_stack.stack.push(Int(b.rem_euclid(*a)));
+				}
+				(Int(n), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| el.rem_euclid(*n)).collect()
+					));
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					program_stack.stack.push(ArrInt(
+						a.iter().zip(b).map(|(a, b)| b.rem_euclid(*a)).collect()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		ModuloRemEuclidX => {
 			let a = program_stack.stack.pop().unwrap();
 			let b = program_stack.stack.last_mut().unwrap();
 			match (a, b) {
@@ -660,6 +1061,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			program_stack.stack.insert(0, top);
 		}
 		Multiply => {
+			let a = program_stack.stack.last().unwrap();
+			let b = program_stack.stack[program_stack.stack.len()-2].clone();
+			match (a, b) {
+				(Int(a), Int(b)) => {
+					program_stack.stack.push(Int(b * a));
+				}
+				(Int(n), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| el * n).collect()
+					));
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					program_stack.stack.push(ArrInt(
+						a.iter().zip(b).map(|(a, b)| b * a).collect()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		MultiplyX => {
 			let a = program_stack.stack.pop().unwrap();
 			let b = program_stack.stack.last_mut().unwrap();
 			match (a, b) {
@@ -682,6 +1105,19 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Negate => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(Int(-n));
+				}
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| -el).collect()
+					));
+				}
+			}
+		}
+		NegateX => {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
 				Int(n) => {
@@ -695,6 +1131,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Range0Excluding => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(ArrInt( (0..*n).collect() ));
+				}
+				_ => panic!()
+			}
+		}
+		Range0ExcludingX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(n) => {
@@ -704,6 +1149,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Range0Including => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(ArrInt( (0..=*n).collect() ));
+				}
+				_ => panic!()
+			}
+		}
+		Range0IncludingX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(n) => {
@@ -713,6 +1167,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Range1Excluding => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(ArrInt( (1..*n).collect() ));
+				}
+				_ => panic!()
+			}
+		}
+		Range1ExcludingX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(n) => {
@@ -722,6 +1185,15 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Range1Including => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(ArrInt( (1..=*n).collect() ));
+				}
+				_ => panic!()
+			}
+		}
+		Range1IncludingX => {
 			let top = program_stack.stack.pop().unwrap();
 			match top {
 				Int(n) => {
@@ -731,6 +1203,16 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Reverse => {
+			let top = program_stack.stack.last().unwrap().clone();
+			match top {
+				ArrInt(mut v) => {
+					v.reverse();
+					program_stack.stack.push(ArrInt(v));
+				}
+				_ => panic!()
+			}
+		}
+		ReverseX => {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
 				ArrInt(v) => {
@@ -740,6 +1222,17 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		SliceExcludingExcluding => {
+			let index_to = program_stack.stack.last().unwrap();
+			let index_from = &program_stack.stack[program_stack.stack.len()-2];
+			let v = &program_stack.stack[program_stack.stack.len()-3];
+			match (index_from, index_to, v) {
+				(Int(index_from), Int(index_to), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[*index_from as usize + 1 .. *index_to as usize].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		SliceExcludingExcludingX => {
 			let index_to = program_stack.stack.pop().unwrap();
 			let index_from = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
@@ -751,6 +1244,17 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		SliceExcludingIncluding => {
+			let index_to = program_stack.stack.last().unwrap();
+			let index_from = &program_stack.stack[program_stack.stack.len()-2];
+			let v = &program_stack.stack[program_stack.stack.len()-3];
+			match (index_from, index_to, v) {
+				(Int(index_from), Int(index_to), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[*index_from as usize + 1 ..= *index_to as usize].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		SliceExcludingIncludingX => {
 			let index_to = program_stack.stack.pop().unwrap();
 			let index_from = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
@@ -762,6 +1266,16 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		SliceExcludingFrom => {
+			let i = program_stack.stack.last().unwrap();
+			let v = &program_stack.stack[program_stack.stack.len()-2];
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[*i as usize + 1 ..].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		SliceExcludingFromX => {
 			let i = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
 			match (i, v) {
@@ -772,6 +1286,16 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		SliceExcludingTo => {
+			let i = program_stack.stack.last().unwrap();
+			let v = &program_stack.stack[program_stack.stack.len()-2];
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[.. *i as usize].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		SliceExcludingToX => {
 			let i = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
 			match (i, v) {
@@ -782,6 +1306,17 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		SliceIncludingExcluding => {
+			let index_to = program_stack.stack.last().unwrap();
+			let index_from = &program_stack.stack[program_stack.stack.len()-2];
+			let v = &program_stack.stack[program_stack.stack.len()-3];
+			match (index_from, index_to, v) {
+				(Int(index_from), Int(index_to), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[*index_from as usize .. *index_to as usize].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		SliceIncludingExcludingX => {
 			let index_to = program_stack.stack.pop().unwrap();
 			let index_from = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
@@ -793,6 +1328,17 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		SliceIncludingIncluding => {
+			let index_to = program_stack.stack.last().unwrap();
+			let index_from = &program_stack.stack[program_stack.stack.len()-2];
+			let v = &program_stack.stack[program_stack.stack.len()-3];
+			match (index_from, index_to, v) {
+				(Int(index_from), Int(index_to), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[*index_from as usize ..= *index_to as usize].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		SliceIncludingIncludingX => {
 			let index_to = program_stack.stack.pop().unwrap();
 			let index_from = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
@@ -804,6 +1350,16 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		SliceIncludingFrom => {
+			let i = program_stack.stack.last().unwrap();
+			let v = &program_stack.stack[program_stack.stack.len()-2];
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[*i as usize ..].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		SliceIncludingFromX => {
 			let i = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
 			match (i, v) {
@@ -814,6 +1370,16 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		SliceIncludingTo => {
+			let i = program_stack.stack.last().unwrap();
+			let v = &program_stack.stack[program_stack.stack.len()-2];
+			match (i, v) {
+				(Int(i), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(v[..= *i as usize].to_vec()));
+				}
+				_ => panic!()
+			}
+		}
+		SliceIncludingToX => {
 			let i = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.pop().unwrap();
 			match (i, v) {
@@ -824,6 +1390,16 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Sort => {
+			let top = program_stack.stack.last().unwrap().clone();
+			match top {
+				ArrInt(mut v) => {
+					v.sort();
+					program_stack.stack.push(ArrInt(v));
+				}
+				_ => panic!()
+			}
+		}
+		SortX => {
 			let top = program_stack.stack.last_mut().unwrap();
 			match top {
 				ArrInt(v) => {
@@ -833,6 +1409,28 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Subtract => {
+			let i = program_stack.stack.last().unwrap();
+			let v = &program_stack.stack[program_stack.stack.len()-2];
+			match (i, v) {
+				(Int(a), Int(b)) => {
+					program_stack.stack.push(Int(b - a));
+				}
+				(Int(n), ArrInt(v)) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| el - n).collect()
+					));
+				}
+				// TODO: (ArrInt, Int)
+				(ArrInt(a), ArrInt(b)) => {
+					assert_eq!(a.len(), b.len());
+					program_stack.stack.push(ArrInt(
+						a.iter().zip(b).map(|(a, b)| b - a).collect()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		SubtractX => {
 			let i = program_stack.stack.pop().unwrap();
 			let v = program_stack.stack.last_mut().unwrap();
 			match (i, v) {
@@ -873,6 +1471,17 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Tail => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(
+						v[1..].to_vec()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		TailX => {
 			let v = program_stack.stack.last_mut().unwrap();
 			match v {
 				ArrInt(v) => {
@@ -894,31 +1503,31 @@ mod token_exec {
 	use StackElement::*;
 	use Token::*;
 
-	mod join {
+	mod join_x {
 		use super::*;
 		#[test]
 		fn int_int() {
 			assert_eq!(
 				ProgramStack::from(ArrInt(vec![1, 2])),
-				ProgramStack::from([Int(1), Int(2)]).exec_val(Join)
+				ProgramStack::from([Int(1), Int(2)]).exec_val(JoinX)
 			)
 		}
 		#[test]
 		fn vi_vi() {
 			assert_eq!(
 				ProgramStack::from(ArrInt(vec![1,2,3,4])),
-				ProgramStack::from([ArrInt(vec![1,2]), ArrInt(vec![3,4])]).exec_val(Join)
+				ProgramStack::from([ArrInt(vec![1,2]), ArrInt(vec![3,4])]).exec_val(JoinX)
 			)
 		}
 	}
 
-	mod sort {
+	mod sort_x {
 		use super::*;
 		#[test]
 		fn _0_1_2_3_4_5_6_7_8_9() {
 			assert_eq!(
 				ProgramStack::from(ArrInt(vec![0,1,2,3,4,5,6,7,8,9])),
-				ProgramStack::from(ArrInt(vec![5,9,1,3,4,0,8,7,2,6])).exec_val(Sort)
+				ProgramStack::from(ArrInt(vec![5,9,1,3,4,0,8,7,2,6])).exec_val(SortX)
 			)
 		}
 	}
@@ -939,22 +1548,46 @@ mod program_exec {
 			#[test]
 			fn int_pos() {
 				assert_eq!(
-					eval("42"),
+					eval("42 42"),
 					eval("42 abs")
 				)
 			}
 			#[test]
 			fn int_neg() {
 				assert_eq!(
-					eval("42"),
+					eval("-42 42"),
 					eval("-42 abs")
 				)
 			}
 			#[test]
 			fn vi() {
 				assert_eq!(
-					eval("1,2,3"),
+					eval("-1,2,-3 1,2,3"),
 					eval("-1,2,-3 abs")
+				)
+			}
+		}
+		mod abs_x {
+			use super::*;
+			#[test]
+			fn int_pos() {
+				assert_eq!(
+					eval("42"),
+					eval("42 abs!")
+				)
+			}
+			#[test]
+			fn int_neg() {
+				assert_eq!(
+					eval("42"),
+					eval("-42 abs!")
+				)
+			}
+			#[test]
+			fn vi() {
+				assert_eq!(
+					eval("1,2,3"),
+					eval("-1,2,-3 abs!")
 				)
 			}
 		}
@@ -963,22 +1596,46 @@ mod program_exec {
 			#[test]
 			fn _10__1() {
 				assert_eq!(
-					eval("11"),
+					eval("10 1 11"),
 					eval("10 1 add")
 				)
 			}
 			#[test]
 			fn _10_20_30__1() {
 				assert_eq!(
-					eval("11,21,31"),
+					eval("10,20,30 1 11,21,31"),
 					eval("10,20,30 1 add")
 				)
 			}
 			#[test]
 			fn _10_20_30__1_2_3() {
 				assert_eq!(
-					eval("11,22,33"),
+					eval("10,20,30 1,2,3 11,22,33"),
 					eval("10,20,30 1,2,3 add")
+				)
+			}
+		}
+		mod add_x {
+			use super::*;
+			#[test]
+			fn _10__1() {
+				assert_eq!(
+					eval("11"),
+					eval("10 1 add!")
+				)
+			}
+			#[test]
+			fn _10_20_30__1() {
+				assert_eq!(
+					eval("11,21,31"),
+					eval("10,20,30 1 add!")
+				)
+			}
+			#[test]
+			fn _10_20_30__1_2_3() {
+				assert_eq!(
+					eval("11,22,33"),
+					eval("10,20,30 1,2,3 add!")
 				)
 			}
 		}
@@ -987,29 +1644,60 @@ mod program_exec {
 			#[test]
 			fn _10_20_30__0() {
 				assert_eq!(
-					eval("10"),
+					eval("10,20,30 0 10"),
 					eval("10,20,30 0 at")
 				)
 			}
 			#[test]
 			fn _10_20_30__1() {
 				assert_eq!(
-					eval("20"),
+					eval("10,20,30 1 20"),
 					eval("10,20,30 1 at")
 				)
 			}
 			#[test]
 			fn _10_20_30__2() {
 				assert_eq!(
-					eval("30"),
+					eval("10,20,30 2 30"),
 					eval("10,20,30 2 at")
 				)
 			}
 			#[test]
 			fn _10_20_30_40_50__1_2_4() {
 				assert_eq!(
-					eval("20,30,50"),
+					eval("10,20,30,40,50 1,2,4 20,30,50"),
 					eval("10,20,30,40,50 1,2,4 at")
+				)
+			}
+		}
+		mod at_index_x {
+			use super::*;
+			#[test]
+			fn _10_20_30__0() {
+				assert_eq!(
+					eval("10"),
+					eval("10,20,30 0 at!")
+				)
+			}
+			#[test]
+			fn _10_20_30__1() {
+				assert_eq!(
+					eval("20"),
+					eval("10,20,30 1 at!")
+				)
+			}
+			#[test]
+			fn _10_20_30__2() {
+				assert_eq!(
+					eval("30"),
+					eval("10,20,30 2 at!")
+				)
+			}
+			#[test]
+			fn _10_20_30_40_50__1_2_4() {
+				assert_eq!(
+					eval("20,30,50"),
+					eval("10,20,30,40,50 1,2,4 at!")
 				)
 			}
 		}
@@ -1018,8 +1706,18 @@ mod program_exec {
 			#[test]
 			fn _42() {
 				assert_eq!(
-					eval("41"),
+					eval("42 41"),
 					eval("42 dec")
+				)
+			}
+		}
+		mod decrease_x {
+			use super::*;
+			#[test]
+			fn _42() {
+				assert_eq!(
+					eval("41"),
+					eval("42 dec!")
 				)
 			}
 		}
@@ -1028,8 +1726,18 @@ mod program_exec {
 			#[test]
 			fn _31415() {
 				assert_eq!(
-					eval("3,1,4,1,5"),
+					eval("31415 3,1,4,1,5"),
 					eval("31415 digits")
+				)
+			}
+		}
+		mod digits_x {
+			use super::*;
+			#[test]
+			fn _31415() {
+				assert_eq!(
+					eval("3,1,4,1,5"),
+					eval("31415 digits!")
 				)
 			}
 		}
@@ -1038,29 +1746,60 @@ mod program_exec {
 			#[test]
 			fn _42__10() {
 				assert_eq!(
-					eval("4"),
+					eval("42 10 4"),
 					eval("42 10 divint")
 				)
 			}
 			#[test]
 			fn _47__10() {
 				assert_eq!(
-					eval("4"),
+					eval("47 10 4"),
 					eval("47 10 divint")
 				)
 			}
 			#[test]
 			fn _10_20_30__2() {
 				assert_eq!(
-					eval("5,10,15"),
+					eval("10,20,30 2 5,10,15"),
 					eval("10,20,30 2 divint")
 				)
 			}
 			#[test]
 			fn _10_20_30__2_4_5() {
 				assert_eq!(
-					eval("5,5,6"),
+					eval("10,20,30 2,4,5 5,5,6"),
 					eval("10,20,30 2,4,5 divint")
+				)
+			}
+		}
+		mod divide_int_x {
+			use super::*;
+			#[test]
+			fn _42__10() {
+				assert_eq!(
+					eval("4"),
+					eval("42 10 divint!")
+				)
+			}
+			#[test]
+			fn _47__10() {
+				assert_eq!(
+					eval("4"),
+					eval("47 10 divint!")
+				)
+			}
+			#[test]
+			fn _10_20_30__2() {
+				assert_eq!(
+					eval("5,10,15"),
+					eval("10,20,30 2 divint!")
+				)
+			}
+			#[test]
+			fn _10_20_30__2_4_5() {
+				assert_eq!(
+					eval("5,5,6"),
+					eval("10,20,30 2,4,5 divint!")
 				)
 			}
 		}
@@ -1129,8 +1868,18 @@ mod program_exec {
 			#[test]
 			fn _1_2_3() {
 				assert_eq!(
-					eval("1"),
+					eval("1,2,3 1"),
 					eval("1,2,3 first")
+				)
+			}
+		}
+		mod first_x {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("1"),
+					eval("1,2,3 first!")
 				)
 			}
 		}
@@ -1139,8 +1888,18 @@ mod program_exec {
 			#[test]
 			fn _42() {
 				assert_eq!(
-					eval("43"),
+					eval("42 43"),
 					eval("42 inc")
+				)
+			}
+		}
+		mod increase_x {
+			use super::*;
+			#[test]
+			fn _42() {
+				assert_eq!(
+					eval("43"),
+					eval("42 inc!")
 				)
 			}
 		}
@@ -1153,14 +1912,14 @@ mod program_exec {
 					#[test]
 					fn _5_9_1_3_4_0_8_7_2_6() {
 						assert_eq!(
-							eval("1"),
+							eval("5,9,1,3,4,0,8,7,2,6 1"),
 							eval("5,9,1,3,4,0,8,7,2,6 imaxf")
 						)
 					}
 					#[test]
 					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
 						assert_eq!(
-							eval("1"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 1"),
 							eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxf")
 						)
 					}
@@ -1170,14 +1929,14 @@ mod program_exec {
 					#[test]
 					fn _5_9_1_3_4_0_8_7_2_6() {
 						assert_eq!(
-							eval("1"),
+							eval("5,9,1,3,4,0,8,7,2,6 1"),
 							eval("5,9,1,3,4,0,8,7,2,6 imaxl")
 						)
 					}
 					#[test]
 					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
 						assert_eq!(
-							eval("8"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 8"),
 							eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxl")
 						)
 					}
@@ -1190,14 +1949,14 @@ mod program_exec {
 					#[test]
 					fn _5_9_1_3_4_0_8_7_2_6() {
 						assert_eq!(
-							eval("5"),
+							eval("5,9,1,3,4,0,8,7,2,6 5"),
 							eval("5,9,1,3,4,0,8,7,2,6 iminf")
 						)
 					}
 					#[test]
 					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
 						assert_eq!(
-							eval("3"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 3"),
 							eval("5,9,1,0,3,4,0,8,9,7,2,6 iminf")
 						)
 					}
@@ -1207,15 +1966,92 @@ mod program_exec {
 					#[test]
 					fn _5_9_1_3_4_0_8_7_2_6() {
 						assert_eq!(
-							eval("5"),
+							eval("5,9,1,3,4,0,8,7,2,6 5"),
 							eval("5,9,1,3,4,0,8,7,2,6 iminl")
 						)
 					}
 					#[test]
 					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
 						assert_eq!(
-							eval("6"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 6"),
 							eval("5,9,1,0,3,4,0,8,9,7,2,6 iminl")
+						)
+					}
+				}
+			}
+		}
+		mod index_of_x {
+			use super::*;
+			mod max {
+				use super::*;
+				mod first {
+					use super::*;
+					#[test]
+					fn _5_9_1_3_4_0_8_7_2_6() {
+						assert_eq!(
+							eval("1"),
+							eval("5,9,1,3,4,0,8,7,2,6 imaxf!")
+						)
+					}
+					#[test]
+					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+						assert_eq!(
+							eval("1"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxf!")
+						)
+					}
+				}
+				mod last {
+					use super::*;
+					#[test]
+					fn _5_9_1_3_4_0_8_7_2_6() {
+						assert_eq!(
+							eval("1"),
+							eval("5,9,1,3,4,0,8,7,2,6 imaxl!")
+						)
+					}
+					#[test]
+					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+						assert_eq!(
+							eval("8"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 imaxl!")
+						)
+					}
+				}
+			}
+			mod min {
+				use super::*;
+				mod first {
+					use super::*;
+					#[test]
+					fn _5_9_1_3_4_0_8_7_2_6() {
+						assert_eq!(
+							eval("5"),
+							eval("5,9,1,3,4,0,8,7,2,6 iminf!")
+						)
+					}
+					#[test]
+					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+						assert_eq!(
+							eval("3"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 iminf!")
+						)
+					}
+				}
+				mod last {
+					use super::*;
+					#[test]
+					fn _5_9_1_3_4_0_8_7_2_6() {
+						assert_eq!(
+							eval("5"),
+							eval("5,9,1,3,4,0,8,7,2,6 iminl!")
+						)
+					}
+					#[test]
+					fn _5_9_1_0_3_4_0_8_9_7_2_6() {
+						assert_eq!(
+							eval("6"),
+							eval("5,9,1,0,3,4,0,8,9,7,2,6 iminl!")
 						)
 					}
 				}
@@ -1226,29 +2062,60 @@ mod program_exec {
 			#[test]
 			fn int_int() {
 				assert_eq!(
-					eval("1,2"),
+					eval("1 2 1,2"),
 					eval("1 2 join")
 				)
 			}
 			#[test]
 			fn vi_vi() {
 				assert_eq!(
-					eval("1,2,3,4"),
+					eval("1,2 3,4 1,2,3,4"),
 					eval("1,2 3,4 join")
 				)
 			}
 			#[test]
 			fn vi_int() {
 				assert_eq!(
-					eval("1,2,3"),
+					eval("1,2 3 1,2,3"),
 					eval("1,2 3 join")
 				)
 			}
 			#[test]
 			fn int_vi() {
 				assert_eq!(
-					eval("1,2,3"),
+					eval("1 2,3 1,2,3"),
 					eval("1 2,3 join")
+				)
+			}
+		}
+		mod join_x {
+			use super::*;
+			#[test]
+			fn int_int() {
+				assert_eq!(
+					eval("1,2"),
+					eval("1 2 join!")
+				)
+			}
+			#[test]
+			fn vi_vi() {
+				assert_eq!(
+					eval("1,2,3,4"),
+					eval("1,2 3,4 join!")
+				)
+			}
+			#[test]
+			fn vi_int() {
+				assert_eq!(
+					eval("1,2,3"),
+					eval("1,2 3 join!")
+				)
+			}
+			#[test]
+			fn int_vi() {
+				assert_eq!(
+					eval("1,2,3"),
+					eval("1 2,3 join!")
 				)
 			}
 		}
@@ -1257,8 +2124,18 @@ mod program_exec {
 			#[test]
 			fn _1_2_3() {
 				assert_eq!(
-					eval("123"),
+					eval("1,2,3 123"),
 					eval("1,2,3 joindigits")
+				)
+			}
+		}
+		mod join_digits_x {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("123"),
+					eval("1,2,3 joindigits!")
 				)
 			}
 		}
@@ -1267,8 +2144,18 @@ mod program_exec {
 			#[test]
 			fn _4_5_6_7() {
 				assert_eq!(
-					eval("4,5,6"),
+					eval("4,5,6,7 4,5,6"),
 					eval("4,5,6,7 head")
+				)
+			}
+		}
+		mod head_x {
+			use super::*;
+			#[test]
+			fn _4_5_6_7() {
+				assert_eq!(
+					eval("4,5,6"),
+					eval("4,5,6,7 head!")
 				)
 			}
 		}
@@ -1277,8 +2164,18 @@ mod program_exec {
 			#[test]
 			fn _1_2_3() {
 				assert_eq!(
-					eval("3"),
+					eval("1,2,3 3"),
 					eval("1,2,3 last")
+				)
+			}
+		}
+		mod last_x {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("3"),
+					eval("1,2,3 last!")
 				)
 			}
 		}
@@ -1297,8 +2194,18 @@ mod program_exec {
 			#[test]
 			fn _1_2_3() {
 				assert_eq!(
-					eval("3"),
+					eval("1,2,3 3"),
 					eval("1,2,3 max")
+				)
+			}
+		}
+		mod max_x {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("3"),
+					eval("1,2,3 max!")
 				)
 			}
 		}
@@ -1307,8 +2214,18 @@ mod program_exec {
 			#[test]
 			fn _1_2_3() {
 				assert_eq!(
-					eval("1"),
+					eval("1,2,3 1"),
 					eval("1,2,3 min")
+				)
+			}
+		}
+		mod min_x {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("1"),
+					eval("1,2,3 min!")
 				)
 			}
 		}
@@ -1319,42 +2236,42 @@ mod program_exec {
 				#[test]
 				fn _42__5() {
 					assert_eq!(
-						eval("2"),
+						eval("42 5 2"),
 						eval("42 5 modf")
 					)
 				}
 				#[test]
 				fn _m42__5() {
 					assert_eq!(
-						eval("-2"),
+						eval("-42 5 -2"),
 						eval("-42 5 modf")
 					)
 				}
 				#[test]
 				fn _10_20_30__7() {
 					assert_eq!(
-						eval("3,6,2"),
+						eval("10,20,30 7 3,6,2"),
 						eval("10,20,30 7 modf")
 					)
 				}
 				#[test]
 				fn _m10_m20_m30__7() {
 					assert_eq!(
-						eval("-3,-6,-2"),
+						eval("-10,-20,-30 7 -3,-6,-2"),
 						eval("-10,-20,-30 7 modf")
 					)
 				}
 				#[test]
 				fn _10_20_30__6_7_8() {
 					assert_eq!(
-						eval("4,6,6"),
+						eval("10,20,30 6,7,8 4,6,6"),
 						eval("10,20,30 6,7,8 modf")
 					)
 				}
 				#[test]
 				fn _m10_m20_m30__6_7_8() {
 					assert_eq!(
-						eval("-4,-6,-6"),
+						eval("-10,-20,-30 6,7,8 -4,-6,-6"),
 						eval("-10,-20,-30 6,7,8 modf")
 					)
 				}
@@ -1364,43 +2281,136 @@ mod program_exec {
 				#[test]
 				fn _42__5() {
 					assert_eq!(
-						eval("2"),
+						eval("42 5 2"),
 						eval("42 5 mod")
 					)
 				}
 				#[test]
 				fn _m42__5() {
 					assert_eq!(
-						eval("3"),
+						eval("-42 5 3"),
 						eval("-42 5 mod")
 					)
 				}
 				#[test]
 				fn _10_20_30__7() {
 					assert_eq!(
-						eval("3,6,2"),
+						eval("10,20,30 7 3,6,2"),
 						eval("10,20,30 7 mod")
 					)
 				}
 				#[test]
 				fn _m10_m20_m30__7() {
 					assert_eq!(
-						eval("4,1,5"),
+						eval("-10,-20,-30 7 4,1,5"),
 						eval("-10,-20,-30 7 mod")
 					)
 				}
 				#[test]
 				fn _10_20_30__6_7_8() {
 					assert_eq!(
-						eval("4,6,6"),
+						eval("10,20,30 6,7,8 4,6,6"),
 						eval("10,20,30 6,7,8 mod")
 					)
 				}
 				#[test]
 				fn _m10_m20_m30__6_7_8() {
 					assert_eq!(
-						eval("2,1,2"),
+						eval("-10,-20,-30 6,7,8 2,1,2"),
 						eval("-10,-20,-30 6,7,8 mod")
+					)
+				}
+			}
+		}
+		mod modulo_x {
+			use super::*;
+			mod fake {
+				use super::*;
+				#[test]
+				fn _42__5() {
+					assert_eq!(
+						eval("2"),
+						eval("42 5 modf!")
+					)
+				}
+				#[test]
+				fn _m42__5() {
+					assert_eq!(
+						eval("-2"),
+						eval("-42 5 modf!")
+					)
+				}
+				#[test]
+				fn _10_20_30__7() {
+					assert_eq!(
+						eval("3,6,2"),
+						eval("10,20,30 7 modf!")
+					)
+				}
+				#[test]
+				fn _m10_m20_m30__7() {
+					assert_eq!(
+						eval("-3,-6,-2"),
+						eval("-10,-20,-30 7 modf!")
+					)
+				}
+				#[test]
+				fn _10_20_30__6_7_8() {
+					assert_eq!(
+						eval("4,6,6"),
+						eval("10,20,30 6,7,8 modf!")
+					)
+				}
+				#[test]
+				fn _m10_m20_m30__6_7_8() {
+					assert_eq!(
+						eval("-4,-6,-6"),
+						eval("-10,-20,-30 6,7,8 modf!")
+					)
+				}
+			}
+			mod rem_euclid {
+				use super::*;
+				#[test]
+				fn _42__5() {
+					assert_eq!(
+						eval("2"),
+						eval("42 5 mod!")
+					)
+				}
+				#[test]
+				fn _m42__5() {
+					assert_eq!(
+						eval("3"),
+						eval("-42 5 mod!")
+					)
+				}
+				#[test]
+				fn _10_20_30__7() {
+					assert_eq!(
+						eval("3,6,2"),
+						eval("10,20,30 7 mod!")
+					)
+				}
+				#[test]
+				fn _m10_m20_m30__7() {
+					assert_eq!(
+						eval("4,1,5"),
+						eval("-10,-20,-30 7 mod!")
+					)
+				}
+				#[test]
+				fn _10_20_30__6_7_8() {
+					assert_eq!(
+						eval("4,6,6"),
+						eval("10,20,30 6,7,8 mod!")
+					)
+				}
+				#[test]
+				fn _m10_m20_m30__6_7_8() {
+					assert_eq!(
+						eval("2,1,2"),
+						eval("-10,-20,-30 6,7,8 mod!")
 					)
 				}
 			}
@@ -1443,22 +2453,46 @@ mod program_exec {
 			#[test]
 			fn _3_4() {
 				assert_eq!(
-					eval("12"),
+					eval("3 4 12"),
 					eval("3 4 mul")
 				)
 			}
 			#[test]
 			fn _1_2_3__10() {
 				assert_eq!(
-					eval("10,20,30"),
+					eval("1,2,3 10 10,20,30"),
 					eval("1,2,3 10 mul")
 				)
 			}
 			#[test]
 			fn _1_2_3__4_5_6() {
 				assert_eq!(
-					eval("4,10,18"),
+					eval("1,2,3 4,5,6 4,10,18"),
 					eval("1,2,3 4,5,6 mul")
+				)
+			}
+		}
+		mod multiply_x {
+			use super::*;
+			#[test]
+			fn _3_4() {
+				assert_eq!(
+					eval("12"),
+					eval("3 4 mul!")
+				)
+			}
+			#[test]
+			fn _1_2_3__10() {
+				assert_eq!(
+					eval("10,20,30"),
+					eval("1,2,3 10 mul!")
+				)
+			}
+			#[test]
+			fn _1_2_3__4_5_6() {
+				assert_eq!(
+					eval("4,10,18"),
+					eval("1,2,3 4,5,6 mul!")
 				)
 			}
 		}
@@ -1467,15 +2501,32 @@ mod program_exec {
 			#[test]
 			fn int() {
 				assert_eq!(
-					eval("-42"),
+					eval("42 -42"),
 					eval("42 neg")
 				)
 			}
 			#[test]
 			fn vi() {
 				assert_eq!(
-					eval("-1,-2,-3"),
+					eval("1,2,3 -1,-2,-3"),
 					eval("1,2,3 neg")
+				)
+			}
+		}
+		mod negate_x {
+			use super::*;
+			#[test]
+			fn int() {
+				assert_eq!(
+					eval("-42"),
+					eval("42 neg!")
+				)
+			}
+			#[test]
+			fn vi() {
+				assert_eq!(
+					eval("-1,-2,-3"),
+					eval("1,2,3 neg!")
 				)
 			}
 		}
@@ -1488,7 +2539,7 @@ mod program_exec {
 					#[test]
 					fn _5() {
 						assert_eq!(
-							eval("0,1,2,3,4"),
+							eval("5 0,1,2,3,4"),
 							eval("5 range0excl")
 						)
 					}
@@ -1498,7 +2549,7 @@ mod program_exec {
 					#[test]
 					fn _5() {
 						assert_eq!(
-							eval("0,1,2,3,4,5"),
+							eval("5 0,1,2,3,4,5"),
 							eval("5 range0incl")
 						)
 					}
@@ -1511,7 +2562,7 @@ mod program_exec {
 					#[test]
 					fn _5() {
 						assert_eq!(
-							eval("1,2,3,4"),
+							eval("5 1,2,3,4"),
 							eval("5 range1excl")
 						)
 					}
@@ -1521,8 +2572,57 @@ mod program_exec {
 					#[test]
 					fn _5() {
 						assert_eq!(
-							eval("1,2,3,4,5"),
+							eval("5 1,2,3,4,5"),
 							eval("5 range1incl")
+						)
+					}
+				}
+			}
+		}
+		mod range_x {
+			use super::*;
+			mod _0 {
+				use super::*;
+				mod excluding {
+					use super::*;
+					#[test]
+					fn _5() {
+						assert_eq!(
+							eval("0,1,2,3,4"),
+							eval("5 range0excl!")
+						)
+					}
+				}
+				mod including {
+					use super::*;
+					#[test]
+					fn _5() {
+						assert_eq!(
+							eval("0,1,2,3,4,5"),
+							eval("5 range0incl!")
+						)
+					}
+				}
+			}
+			mod _1 {
+				use super::*;
+				mod excluding {
+					use super::*;
+					#[test]
+					fn _5() {
+						assert_eq!(
+							eval("1,2,3,4"),
+							eval("5 range1excl!")
+						)
+					}
+				}
+				mod including {
+					use super::*;
+					#[test]
+					fn _5() {
+						assert_eq!(
+							eval("1,2,3,4,5"),
+							eval("5 range1incl!")
 						)
 					}
 				}
@@ -1533,8 +2633,18 @@ mod program_exec {
 			#[test]
 			fn _1_2_3() {
 				assert_eq!(
-					eval("3,2,1"),
+					eval("1,2,3 3,2,1"),
 					eval("1,2,3 rev")
+				)
+			}
+		}
+		mod reverse_x {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("3,2,1"),
+					eval("1,2,3 rev!")
 				)
 			}
 		}
@@ -1547,7 +2657,7 @@ mod program_exec {
 					#[test]
 					fn _0_1_2_3_4_5_6_7_8_9() {
 						assert_eq!(
-							eval("4,5,6,7,8,9"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 4,5,6,7,8,9"),
 							eval("0,1,2,3,4,5,6,7,8,9 3 sliceexclfrom")
 						)
 					}
@@ -1557,7 +2667,7 @@ mod program_exec {
 					#[test]
 					fn _0_1_2_3_4_5_6_7_8_9() {
 						assert_eq!(
-							eval("0,1,2"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 0,1,2"),
 							eval("0,1,2,3,4,5,6,7,8,9 3 sliceexclto")
 						)
 					}
@@ -1569,7 +2679,7 @@ mod program_exec {
 						#[test]
 						fn _0_1_2_3_4_5_6_7_8_9() {
 							assert_eq!(
-								eval("4,5"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 4,5"),
 								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceexclexcl")
 							)
 						}
@@ -1579,7 +2689,7 @@ mod program_exec {
 						#[test]
 						fn _0_1_2_3_4_5_6_7_8_9() {
 							assert_eq!(
-								eval("4,5,6"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 4,5,6"),
 								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceexclincl")
 							)
 						}
@@ -1593,7 +2703,7 @@ mod program_exec {
 					#[test]
 					fn _0_1_2_3_4_5_6_7_8_9() {
 						assert_eq!(
-							eval("3,4,5,6,7,8,9"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 3,4,5,6,7,8,9"),
 							eval("0,1,2,3,4,5,6,7,8,9 3 sliceinclfrom")
 						)
 					}
@@ -1603,7 +2713,7 @@ mod program_exec {
 					#[test]
 					fn _0_1_2_3_4_5_6_7_8_9() {
 						assert_eq!(
-							eval("0,1,2,3"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 0,1,2,3"),
 							eval("0,1,2,3,4,5,6,7,8,9 3 sliceinclto")
 						)
 					}
@@ -1615,7 +2725,7 @@ mod program_exec {
 						#[test]
 						fn _0_1_2_3_4_5_6_7_8_9() {
 							assert_eq!(
-								eval("3,4,5"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 3,4,5"),
 								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceinclexcl")
 							)
 						}
@@ -1625,8 +2735,103 @@ mod program_exec {
 						#[test]
 						fn _0_1_2_3_4_5_6_7_8_9() {
 							assert_eq!(
-								eval("3,4,5,6"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 3,4,5,6"),
 								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceinclincl")
+							)
+						}
+					}
+				}
+			}
+		}
+		mod slice_x {
+			use super::*;
+			mod excluding {
+				use super::*;
+				mod from {
+					use super::*;
+					#[test]
+					fn _0_1_2_3_4_5_6_7_8_9() {
+						assert_eq!(
+							eval("4,5,6,7,8,9"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 sliceexclfrom!")
+						)
+					}
+				}
+				mod to {
+					use super::*;
+					#[test]
+					fn _0_1_2_3_4_5_6_7_8_9() {
+						assert_eq!(
+							eval("0,1,2"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 sliceexclto!")
+						)
+					}
+				}
+				mod from_to {
+					use super::*;
+					mod excluding {
+						use super::*;
+						#[test]
+						fn _0_1_2_3_4_5_6_7_8_9() {
+							assert_eq!(
+								eval("4,5"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceexclexcl!")
+							)
+						}
+					}
+					mod including {
+						use super::*;
+						#[test]
+						fn _0_1_2_3_4_5_6_7_8_9() {
+							assert_eq!(
+								eval("4,5,6"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceexclincl!")
+							)
+						}
+					}
+				}
+			}
+			mod including {
+				use super::*;
+				mod from {
+					use super::*;
+					#[test]
+					fn _0_1_2_3_4_5_6_7_8_9() {
+						assert_eq!(
+							eval("3,4,5,6,7,8,9"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 sliceinclfrom!")
+						)
+					}
+				}
+				mod to {
+					use super::*;
+					#[test]
+					fn _0_1_2_3_4_5_6_7_8_9() {
+						assert_eq!(
+							eval("0,1,2,3"),
+							eval("0,1,2,3,4,5,6,7,8,9 3 sliceinclto!")
+						)
+					}
+				}
+				mod from_to {
+					use super::*;
+					mod excluding {
+						use super::*;
+						#[test]
+						fn _0_1_2_3_4_5_6_7_8_9() {
+							assert_eq!(
+								eval("3,4,5"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceinclexcl!")
+							)
+						}
+					}
+					mod including {
+						use super::*;
+						#[test]
+						fn _0_1_2_3_4_5_6_7_8_9() {
+							assert_eq!(
+								eval("3,4,5,6"),
+								eval("0,1,2,3,4,5,6,7,8,9 3 6 sliceinclincl!")
 							)
 						}
 					}
@@ -1638,8 +2843,18 @@ mod program_exec {
 			#[test]
 			fn _0_1_2_3_4_5_6_7_8_9() {
 				assert_eq!(
-					eval("0,1,2,3,4,5,6,7,8,9"),
+					eval("5,9,1,3,4,0,8,7,2,6 0,1,2,3,4,5,6,7,8,9"),
 					eval("5,9,1,3,4,0,8,7,2,6 sort")
+				)
+			}
+		}
+		mod sort_x {
+			use super::*;
+			#[test]
+			fn _0_1_2_3_4_5_6_7_8_9() {
+				assert_eq!(
+					eval("0,1,2,3,4,5,6,7,8,9"),
+					eval("5,9,1,3,4,0,8,7,2,6 sort!")
 				)
 			}
 		}
@@ -1648,22 +2863,46 @@ mod program_exec {
 			#[test]
 			fn _10__1() {
 				assert_eq!(
-					eval("9"),
+					eval("10 1 9"),
 					eval("10 1 sub")
 				)
 			}
 			#[test]
 			fn _10_20_30__1() {
 				assert_eq!(
-					eval("9,19,29"),
+					eval("10,20,30 1 9,19,29"),
 					eval("10,20,30 1 sub")
 				)
 			}
 			#[test]
 			fn _10_20_30__1_2_3() {
 				assert_eq!(
-					eval("9,18,27"),
+					eval("10,20,30 1,2,3 9,18,27"),
 					eval("10,20,30 1,2,3 sub")
+				)
+			}
+		}
+		mod subtract_x {
+			use super::*;
+			#[test]
+			fn _10__1() {
+				assert_eq!(
+					eval("9"),
+					eval("10 1 sub!")
+				)
+			}
+			#[test]
+			fn _10_20_30__1() {
+				assert_eq!(
+					eval("9,19,29"),
+					eval("10,20,30 1 sub!")
+				)
+			}
+			#[test]
+			fn _10_20_30__1_2_3() {
+				assert_eq!(
+					eval("9,18,27"),
+					eval("10,20,30 1,2,3 sub!")
 				)
 			}
 		}
@@ -1723,8 +2962,18 @@ mod program_exec {
 			#[test]
 			fn _4_5_6_7() {
 				assert_eq!(
-					eval("5,6,7"),
+					eval("4,5,6,7 5,6,7"),
 					eval("4,5,6,7 tail")
+				)
+			}
+		}
+		mod tail_x {
+			use super::*;
+			#[test]
+			fn _4_5_6_7() {
+				assert_eq!(
+					eval("5,6,7"),
+					eval("4,5,6,7 tail!")
 				)
 			}
 		}
