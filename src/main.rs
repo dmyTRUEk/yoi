@@ -111,7 +111,7 @@ impl<const N: usize> From<[StackElement; N]> for ProgramStack {
 enum StackElement {
 	Int(i64),
 	ArrInt(Vec<i64>),
-	TokenLiteral(Box<Token>),
+	// TokenLiteral(Box<Token>),
 }
 impl From<&str> for StackElement {
 	fn from(s: &str) -> Self {
@@ -203,8 +203,9 @@ impl From<&str> for Token {
 	fn from(token_str: &str) -> Self {
 		use Token::*;
 		// dbg!(token_str);
-		if let Some(token_str) = token_str.strip_prefix("'") {
-			Literal(StackElement::TokenLiteral(Box::new(Token::from(token_str))))
+		if let Some(_token_str) = token_str.strip_prefix("'") {
+			unimplemented!()
+			// Literal(StackElement::TokenLiteral(Box::new(Token::from(token_str))))
 		}
 		else {
 			match token_str {
@@ -290,7 +291,6 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 						*el = el.abs();
 					}
 				}
-				TokenLiteral(_) => panic!()
 			}
 		}
 		Add => {
@@ -520,7 +520,6 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 					t.insert(0, pt);
 					ArrInt(t)
 				}
-				_ => panic!()
 			};
 			program_stack.stack.push(new_top);
 		}
@@ -693,7 +692,6 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 						*el = -*el;
 					}
 				}
-				TokenLiteral(_) => panic!()
 			}
 		}
 		Range0Excluding => {
