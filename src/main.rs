@@ -146,7 +146,7 @@ enum Token {
 	AddX,
 	AtIndex,
 	AtIndexX,
-	// Bottom, // remove everything but bottom of the stack // TODO
+	Bottom, // remove everything but bottom of the stack
 	Decrease,
 	DecreaseX,
 	Digits,
@@ -206,7 +206,7 @@ enum Token {
 	MultiplyX,
 	Negate,
 	NegateX,
-	// Pop, // TODO
+	Pop, // remove top stack element
 	// TODO: range: to/from? (aka ascending/descending)
 	Range0Excluding,
 	Range0ExcludingX,
@@ -251,7 +251,7 @@ enum Token {
 	// SwapNM
 	Tail, // everything but first
 	TailX,
-	// Top, // remove everything but top of the stack // TODO
+	Top, // remove everything but top of the stack
 }
 impl Token {
 }
@@ -271,6 +271,7 @@ impl From<&str> for Token {
 				"add!" => AddX,
 				"at" => AtIndex,
 				"at!" => AtIndexX,
+				"bottom" => Bottom,
 				"dec" => Decrease,
 				"dec!" => DecreaseX,
 				"digits" => Digits,
@@ -321,6 +322,7 @@ impl From<&str> for Token {
 				"mul!" => MultiplyX,
 				"neg" => Negate,
 				"neg!" => NegateX,
+				"pop" => Pop,
 				"range0excl" => Range0Excluding,
 				"range0excl!" => Range0ExcludingX,
 				"range0incl" => Range0Including,
@@ -356,6 +358,7 @@ impl From<&str> for Token {
 				"swapwith" => SwapWithIndex,
 				"tail" => Tail,
 				"tail!" => TailX,
+				"top" => Top,
 				_ => Literal(StackElement::from(token_str))
 			}
 		}
@@ -481,6 +484,9 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				}
 				_ => panic!()
 			}
+		}
+		Bottom => {
+			program_stack.stack = vec![program_stack.stack.first().unwrap().clone()];
 		}
 		Decrease => {
 			let i = program_stack.stack.last().unwrap();
@@ -1130,6 +1136,9 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				}
 			}
 		}
+		Pop => {
+			let _ = program_stack.stack.pop().unwrap();
+		}
 		Range0Excluding => {
 			let top = program_stack.stack.last().unwrap();
 			match top {
@@ -1490,6 +1499,9 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
+		Top => {
+			program_stack.stack = vec![program_stack.stack.last().unwrap().clone()];
+		}
 	}
 }
 
@@ -1698,6 +1710,16 @@ mod program_exec {
 				assert_eq!(
 					eval("20,30,50"),
 					eval("10,20,30,40,50 1,2,4 at!")
+				)
+			}
+		}
+		mod bottom {
+			use super::*;
+			#[test]
+			fn _1__2__3() {
+				assert_eq!(
+					eval("1"),
+					eval("1 2 3 bottom")
 				)
 			}
 		}
@@ -2530,6 +2552,16 @@ mod program_exec {
 				)
 			}
 		}
+		mod pop {
+			use super::*;
+			#[test]
+			fn _1__2__3() {
+				assert_eq!(
+					eval("1 2"),
+					eval("1 2 3 pop")
+				)
+			}
+		}
 		mod range {
 			use super::*;
 			mod _0 {
@@ -2974,6 +3006,16 @@ mod program_exec {
 				assert_eq!(
 					eval("5,6,7"),
 					eval("4,5,6,7 tail!")
+				)
+			}
+		}
+		mod top {
+			use super::*;
+			#[test]
+			fn _1__2__3() {
+				assert_eq!(
+					eval("3"),
+					eval("1 2 3 top")
 				)
 			}
 		}
