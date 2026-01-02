@@ -180,8 +180,15 @@ enum Token {
 	IndexOfMinLastX,
 	// InsertAtVI, // 0,1,2,3  5 2 insertat -> 0,1,5,2,3
 	// InsertAtIV, // 0,1,2,3  2 5 insertat -> 0,1,5,2,3
-	// IsEqual, // TODO
-	// IsNotEqual, // TODO
+	IsAllEqual, // 2,2,2 -> 1
+	IsAllEqualX,
+	// IsAllNotEqual, // ?
+	// IsAllNotEqualX,
+	IsEqual, // 42 42 -> 1
+	IsEqualX,
+	IsNotEqual, // 42 137 -> 1
+	IsNotEqualX,
+	// TODO: element-wise equal/not-equal
 	Join,
 	JoinX,
 	JoinDigits,
@@ -206,6 +213,8 @@ enum Token {
 	MultiplyX,
 	Negate,
 	NegateX,
+	Not,
+	NotX,
 	Pop, // remove top stack element
 	// TODO: range: to/from? (aka ascending/descending)
 	Range0Excluding,
@@ -269,6 +278,10 @@ impl From<&str> for Token {
 				"abs!" => AbsX,
 				"add" => Add,
 				"add!" => AddX,
+				"alleq" => IsAllEqual,
+				"alleq!" => IsAllEqualX,
+				// "allne" => IsAllNotEqual,
+				// "allne!" => IsAllNotEqualX,
 				"at" => AtIndex,
 				"at!" => AtIndexX,
 				"bottom" => Bottom,
@@ -284,6 +297,8 @@ impl From<&str> for Token {
 				"dupto" => DuplicateToIndex,
 				"duptobottom" => DuplicateToBottom,
 				"dupunder" => DuplicateUnder,
+				"eq" => IsEqual,
+				"eq!" => IsEqualX,
 				"first" => First,
 				"first!" => FirstX,
 				"head" => Head,
@@ -320,8 +335,12 @@ impl From<&str> for Token {
 				"movetobottom" => MoveToBottom,
 				"mul" => Multiply,
 				"mul!" => MultiplyX,
+				"ne" => IsNotEqual,
+				"ne!" => IsNotEqualX,
 				"neg" => Negate,
 				"neg!" => NegateX,
+				"not" => Not,
+				"not!" => NotX,
 				"pop" => Pop,
 				"range0excl" => Range0Excluding,
 				"range0excl!" => Range0ExcludingX,
@@ -808,6 +827,72 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
+		IsAllEqual => {
+			let v = program_stack.stack.last().unwrap();
+			let res = match v {
+				ArrInt(v) => {
+					v.iter().all(|el| *el == v[0])
+				}
+				_ => panic!()
+			};
+			program_stack.stack.push(Int(res as i64));
+		}
+		IsAllEqualX => {
+			let v = program_stack.stack.pop().unwrap();
+			let res = match v {
+				ArrInt(v) => {
+					v.iter().all(|el| *el == v[0])
+				}
+				_ => panic!()
+			};
+			program_stack.stack.push(Int(res as i64));
+		}
+		//IsAllNotEqual => { unimplemented!() }
+		//IsAllNotEqualX => { unimplemented!() }
+		IsEqual => {
+			let a = program_stack.stack.last().unwrap();
+			let b = &program_stack.stack[program_stack.stack.len()-2];
+			let res = match (a, b) {
+				(Int(a), Int(b)) => a == b,
+				(ArrInt(a), ArrInt(b)) => a == b,
+				_ => unimplemented!()
+			};
+			program_stack.stack.push(Int(res as i64));
+		}
+		IsEqualX => {
+			let a = program_stack.stack.pop().unwrap();
+			let b = program_stack.stack.pop().unwrap();
+			let res = match (a, b) {
+				(Int(a), Int(b)) => a == b,
+				(ArrInt(a), ArrInt(b)) => a == b,
+				_ => unimplemented!()
+			};
+			program_stack.stack.push(Int(res as i64));
+		}
+		IsNotEqual => {
+			let a = program_stack.stack.last().unwrap();
+			let b = &program_stack.stack[program_stack.stack.len()-2];
+			let res = match (a, b) {
+				(Int(a), Int(b)) => {
+					a != b
+				}
+				(ArrInt(a), ArrInt(b)) => {
+					a != b
+				}
+				_ => unimplemented!()
+			};
+			program_stack.stack.push(Int(res as i64));
+		}
+		IsNotEqualX => {
+			let a = program_stack.stack.pop().unwrap();
+			let b = program_stack.stack.pop().unwrap();
+			let res = match (a, b) {
+				(Int(a), Int(b)) => a != b,
+				(ArrInt(a), ArrInt(b)) => a != b,
+				_ => unimplemented!()
+			};
+			program_stack.stack.push(Int(res as i64));
+		}
 		Join => {
 			let top = program_stack.stack.last().unwrap().clone();
 			let pretop = program_stack.stack[program_stack.stack.len()-2].clone();
@@ -1148,6 +1233,48 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				ArrInt(v) => {
 					for el in v {
 						*el = -*el;
+					}
+				}
+			}
+		}
+		Not => {
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(Int(match n {
+						0 => 1,
+						1 => 0,
+						_ => panic!()
+					}));
+				}
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| match el {
+							0 => 1,
+							1 => 0,
+							_ => panic!()
+						}).collect()
+					));
+				}
+			}
+		}
+		NotX => {
+			let top = program_stack.stack.last_mut().unwrap();
+			match top {
+				Int(n) => {
+					*n = match n {
+						0 => 1,
+						1 => 0,
+						_ => panic!()
+					}
+				}
+				ArrInt(v) => {
+					for el in v {
+						*el = match el {
+							0 => 1,
+							1 => 0,
+							_ => panic!()
+						}
 					}
 				}
 			}
@@ -2123,6 +2250,216 @@ mod program_exec {
 				}
 			}
 		}
+		mod is {
+			use super::*;
+			mod all {
+				use super::*;
+				mod equal {
+					use super::*;
+					#[test]
+					fn _1_2_3() {
+						assert_eq!(
+							eval("1,2,3 0"),
+							eval("1,2,3 alleq"),
+						)
+					}
+					#[test]
+					fn _2_2_2() {
+						assert_eq!(
+							eval("2,2,2 1"),
+							eval("2,2,2 alleq"),
+						)
+					}
+				}
+				// mod not_equal {
+				// 	use super::*;
+				// 	#[test]
+				// 	fn _1_2_3() {
+				// 		assert_eq!(
+				// 			eval("1,2,3 1"),
+				// 			eval("1,2,3 allne"),
+				// 		)
+				// 	}
+				// 	#[test]
+				// 	fn _2_2_2() {
+				// 		assert_eq!(
+				// 			eval("2,2,2 0"),
+				// 			eval("2,2,2 allne"),
+				// 		)
+				// 	}
+				// }
+			}
+			mod two {
+				use super::*;
+				mod equal {
+					use super::*;
+					#[test]
+					fn _1__2() {
+						assert_eq!(
+							eval("1 2 0"),
+							eval("1 2 eq"),
+						)
+					}
+					#[test]
+					fn _2__2() {
+						assert_eq!(
+							eval("2 2 1"),
+							eval("2 2 eq"),
+						)
+					}
+					#[test]
+					fn _1_2__1_2() {
+						assert_eq!(
+							eval("1,2 1,2 1"),
+							eval("1,2 1,2 eq")
+						)
+					}
+					#[test]
+					fn _1_2__3_4() {
+						assert_eq!(
+							eval("1,2 3,4 0"),
+							eval("1,2 3,4 eq")
+						)
+					}
+				}
+				mod not_equal {
+					use super::*;
+					#[test]
+					fn _1__2() {
+						assert_eq!(
+							eval("1 2 1"),
+							eval("1 2 ne"),
+						)
+					}
+					#[test]
+					fn _2__2() {
+						assert_eq!(
+							eval("2 2 0"),
+							eval("2 2 ne"),
+						)
+					}
+					#[test]
+					fn _1_2__1_2() {
+						assert_eq!(
+							eval("1,2 1,2 0"),
+							eval("1,2 1,2 ne")
+						)
+					}
+					#[test]
+					fn _1_2__3_4() {
+						assert_eq!(
+							eval("1,2 3,4 1"),
+							eval("1,2 3,4 ne")
+						)
+					}
+				}
+			}
+		}
+		mod is_x {
+			use super::*;
+			mod all {
+				use super::*;
+				mod equal {
+					use super::*;
+					#[test]
+					fn _1_2_3() {
+						assert_eq!(
+							eval("0"),
+							eval("1,2,3 alleq!"),
+						)
+					}
+					#[test]
+					fn _2_2_2() {
+						assert_eq!(
+							eval("1"),
+							eval("2,2,2 alleq!"),
+						)
+					}
+				}
+				// mod not_equal {
+				// 	use super::*;
+				// 	#[test]
+				// 	fn _1_2_3() {
+				// 		assert_eq!(
+				// 			eval("1"),
+				// 			eval("1,2,3 allne!"),
+				// 		)
+				// 	}
+				// 	#[test]
+				// 	fn _2_2_2() {
+				// 		assert_eq!(
+				// 			eval("0"),
+				// 			eval("2,2,2 allne!"),
+				// 		)
+				// 	}
+				// }
+			}
+			mod two {
+				use super::*;
+				mod equal {
+					use super::*;
+					#[test]
+					fn _1__2() {
+						assert_eq!(
+							eval("0"),
+							eval("1 2 eq!"),
+						)
+					}
+					#[test]
+					fn _2__2() {
+						assert_eq!(
+							eval("1"),
+							eval("2 2 eq!"),
+						)
+					}
+					#[test]
+					fn _1_2__1_2() {
+						assert_eq!(
+							eval("1"),
+							eval("1,2 1,2 eq!")
+						)
+					}
+					#[test]
+					fn _1_2__3_4() {
+						assert_eq!(
+							eval("0"),
+							eval("1,2 3,4 eq!")
+						)
+					}
+				}
+				mod not_equal {
+					use super::*;
+					#[test]
+					fn _1__2() {
+						assert_eq!(
+							eval("1"),
+							eval("1 2 ne!"),
+						)
+					}
+					#[test]
+					fn _2__2() {
+						assert_eq!(
+							eval("0"),
+							eval("2 2 ne!"),
+						)
+					}
+					#[test]
+					fn _1_2__1_2() {
+						assert_eq!(
+							eval("0"),
+							eval("1,2 1,2 ne!")
+						)
+					}
+					#[test]
+					fn _1_2__3_4() {
+						assert_eq!(
+							eval("1"),
+							eval("1,2 3,4 ne!")
+						)
+					}
+				}
+			}
+		}
 		mod join {
 			use super::*;
 			#[test]
@@ -2593,6 +2930,54 @@ mod program_exec {
 				assert_eq!(
 					eval("-1,-2,-3"),
 					eval("1,2,3 neg!")
+				)
+			}
+		}
+		mod not {
+			use super::*;
+			#[test]
+			fn _0() {
+				assert_eq!(
+					eval("0 1"),
+					eval("0 not"),
+				)
+			}
+			#[test]
+			fn _1() {
+				assert_eq!(
+					eval("1 0"),
+					eval("1 not"),
+				)
+			}
+			#[test]
+			fn _1_0_1() {
+				assert_eq!(
+					eval("1,0,1 0,1,0"),
+					eval("1,0,1 not")
+				)
+			}
+		}
+		mod not_x {
+			use super::*;
+			#[test]
+			fn _0() {
+				assert_eq!(
+					eval("1"),
+					eval("0 not!"),
+				)
+			}
+			#[test]
+			fn _1() {
+				assert_eq!(
+					eval("0"),
+					eval("1 not!"),
+				)
+			}
+			#[test]
+			fn _1_0_1() {
+				assert_eq!(
+					eval("0,1,0"),
+					eval("1,0,1 not!")
 				)
 			}
 		}
