@@ -149,6 +149,8 @@ enum Token {
 	Bottom, // remove everything but bottom of the stack
 	Decrease,
 	DecreaseX,
+	Differences, // 4,2,1 -> 2,1
+	DifferencesX,
 	Digits,
 	DigitsX,
 	DivideInt,
@@ -216,6 +218,10 @@ enum Token {
 	Not,
 	NotX,
 	Pop, // remove top stack element
+	Product, // 1,2,3 -> 6
+	ProductX,
+	Products, // 1,2,3 -> 1,2,6
+	ProductsX,
 	// TODO: range: to/from? (aka ascending/descending)
 	Range0Excluding,
 	Range0ExcludingX,
@@ -253,6 +259,10 @@ enum Token {
 	// Sqrt, // TODO: for ints: ceil/floor?
 	Subtract,
 	SubtractX,
+	Sum, // 1,2,3 -> 6
+	SumX,
+	Sums, // 1,2,3 -> 1,3,6
+	SumsX,
 	Swap,
 	SwapUnder, // swap two elements under top
 	SwapWithIndex,
@@ -287,6 +297,8 @@ impl From<&str> for Token {
 				"bottom" => Bottom,
 				"dec" => Decrease,
 				"dec!" => DecreaseX,
+				"diff" => Differences,
+				"diff!" => DifferencesX,
 				"digits" => Digits,
 				"digits!" => DigitsX,
 				"divint" => DivideInt,
@@ -342,6 +354,10 @@ impl From<&str> for Token {
 				"not" => Not,
 				"not!" => NotX,
 				"pop" => Pop,
+				"prod" => Product,
+				"prod!" => ProductX,
+				"prods" => Products,
+				"prods!" => ProductsX,
 				"range0excl" => Range0Excluding,
 				"range0excl!" => Range0ExcludingX,
 				"range0incl" => Range0Including,
@@ -372,6 +388,10 @@ impl From<&str> for Token {
 				"sort!" => SortX,
 				"sub" => Subtract,
 				"sub!" => SubtractX,
+				"sum" => Sum,
+				"sum!" => SumX,
+				"sums" => Sums,
+				"sums!" => SumsX,
 				"swap" => Swap,
 				"swapunder" => SwapUnder,
 				"swapwith" => SwapWithIndex,
@@ -531,6 +551,34 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 						*el -= 1;
 					}
 				}
+			}
+		}
+		Differences => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(
+						v.windows(2).map(|w| {
+							let [l, r] = w else { unreachable!() };
+							l - r
+						}).collect()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		DifferencesX => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(
+						v.windows(2).map(|w| {
+							let [l, r] = w else { unreachable!() };
+							l - r
+						}).collect()
+					));
+				}
+				_ => panic!()
 			}
 		}
 		Digits => {
@@ -1282,6 +1330,58 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 		Pop => {
 			let _ = program_stack.stack.pop().unwrap();
 		}
+		Product => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(Int(
+						v.iter().product()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		ProductX => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(Int(
+						v.into_iter().product()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		Products => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					let mut res = vec![];
+					let mut prod = 1;
+					for el in v {
+						prod *= el;
+						res.push(prod);
+					}
+					program_stack.stack.push(ArrInt(res));
+				}
+				_ => panic!()
+			}
+		}
+		ProductsX => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				ArrInt(v) => {
+					let mut res = vec![];
+					let mut prod = 1;
+					for el in v {
+						prod *= el;
+						res.push(prod);
+					}
+					program_stack.stack.push(ArrInt(res));
+				}
+				_ => panic!()
+			}
+		}
 		Range0Excluding => {
 			let top = program_stack.stack.last().unwrap();
 			match top {
@@ -1604,6 +1704,58 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
+		Sum => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(Int(
+						v.iter().sum()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		SumX => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				ArrInt(v) => {
+					program_stack.stack.push(Int(
+						v.into_iter().sum()
+					));
+				}
+				_ => panic!()
+			}
+		}
+		Sums => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					let mut res = vec![];
+					let mut sum = 0;
+					for el in v {
+						sum += el;
+						res.push(sum);
+					}
+					program_stack.stack.push(ArrInt(res));
+				}
+				_ => panic!()
+			}
+		}
+		SumsX => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				ArrInt(v) => {
+					let mut res = vec![];
+					let mut sum = 0;
+					for el in v {
+						sum += el;
+						res.push(sum);
+					}
+					program_stack.stack.push(ArrInt(res));
+				}
+				_ => panic!()
+			}
+		}
 		Swap => {
 			let len = program_stack.stack.len();
 			program_stack.stack.swap(len - 1, len - 2);
@@ -1897,6 +2049,26 @@ mod program_exec {
 				assert_eq!(
 					eval("0,1,2"),
 					eval("1,2,3 dec!")
+				)
+			}
+		}
+		mod differences {
+			use super::*;
+			#[test]
+			fn _7_4_2_1() {
+				assert_eq!(
+					eval("7,4,2,1 3,2,1"),
+					eval("7,4,2,1 diff")
+				)
+			}
+		}
+		mod differences_x {
+			use super::*;
+			#[test]
+			fn _7_4_2_1() {
+				assert_eq!(
+					eval("3,2,1"),
+					eval("7,4,2,1 diff!")
 				)
 			}
 		}
@@ -2991,6 +3163,46 @@ mod program_exec {
 				)
 			}
 		}
+		mod product {
+			use super::*;
+			#[test]
+			fn _1_2_3_4() {
+				assert_eq!(
+					eval("1,2,3,4 24"),
+					eval("1,2,3,4 prod")
+				)
+			}
+		}
+		mod product_x {
+			use super::*;
+			#[test]
+			fn _1_2_3_4() {
+				assert_eq!(
+					eval("24"),
+					eval("1,2,3,4 prod!")
+				)
+			}
+		}
+		mod products {
+			use super::*;
+			#[test]
+			fn _1_2_3_4() {
+				assert_eq!(
+					eval("1,2,3,4 1,2,6,24"),
+					eval("1,2,3,4 prods")
+				)
+			}
+		}
+		mod products_x {
+			use super::*;
+			#[test]
+			fn _1_2_3_4() {
+				assert_eq!(
+					eval("1,2,6,24"),
+					eval("1,2,3,4 prods!")
+				)
+			}
+		}
 		mod range {
 			use super::*;
 			mod _0 {
@@ -3364,6 +3576,46 @@ mod program_exec {
 				assert_eq!(
 					eval("9,18,27"),
 					eval("10,20,30 1,2,3 sub!")
+				)
+			}
+		}
+		mod sum {
+			use super::*;
+			#[test]
+			fn _1_2_3_4() {
+				assert_eq!(
+					eval("1,2,3,4 10"),
+					eval("1,2,3,4 sum")
+				)
+			}
+		}
+		mod sum_x {
+			use super::*;
+			#[test]
+			fn _1_2_3_4() {
+				assert_eq!(
+					eval("10"),
+					eval("1,2,3,4 sum!")
+				)
+			}
+		}
+		mod sums {
+			use super::*;
+			#[test]
+			fn _1_2_3_4() {
+				assert_eq!(
+					eval("1,2,3,4 1,3,6,10"),
+					eval("1,2,3,4 sums")
+				)
+			}
+		}
+		mod sums_x {
+			use super::*;
+			#[test]
+			fn _1_2_3_4() {
+				assert_eq!(
+					eval("1,3,6,10"),
+					eval("1,2,3,4 sums!")
 				)
 			}
 		}
