@@ -489,21 +489,29 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			program_stack.stack = vec![program_stack.stack.first().unwrap().clone()];
 		}
 		Decrease => {
-			let i = program_stack.stack.last().unwrap();
-			match i {
-				Int(i) => {
-					program_stack.stack.push(Int(i - 1));
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(Int(n - 1));
 				}
-				_ => todo!()
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| el - 1).collect()
+					));
+				}
 			}
 		}
 		DecreaseX => {
-			let i = program_stack.stack.last_mut().unwrap();
-			match i {
-				Int(i) => {
-					*i -= 1;
+			let top = program_stack.stack.last_mut().unwrap();
+			match top {
+				Int(n) => {
+					*n -= 1;
 				}
-				_ => todo!()
+				ArrInt(v) => {
+					for el in v {
+						*el -= 1;
+					}
+				}
 			}
 		}
 		Digits => {
@@ -639,21 +647,29 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 			}
 		}
 		Increase => {
-			let i = program_stack.stack.last().unwrap();
-			match i {
-				Int(i) => {
-					program_stack.stack.push(Int(i + 1));
+			let top = program_stack.stack.last().unwrap();
+			match top {
+				Int(n) => {
+					program_stack.stack.push(Int(n + 1));
 				}
-				_ => todo!()
+				ArrInt(v) => {
+					program_stack.stack.push(ArrInt(
+						v.iter().map(|el| el + 1).collect()
+					));
+				}
 			}
 		}
 		IncreaseX => {
-			let i = program_stack.stack.last_mut().unwrap();
-			match i {
-				Int(i) => {
-					*i += 1;
+			let top = program_stack.stack.last_mut().unwrap();
+			match top {
+				Int(n) => {
+					*n += 1;
 				}
-				_ => todo!()
+				ArrInt(v) => {
+					for el in v {
+						*el += 1;
+					}
+				}
 			}
 		}
 		IndexOfMaxFirst => {
@@ -1732,6 +1748,13 @@ mod program_exec {
 					eval("42 dec")
 				)
 			}
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("1,2,3 0,1,2"),
+					eval("1,2,3 dec")
+				)
+			}
 		}
 		mod decrease_x {
 			use super::*;
@@ -1740,6 +1763,13 @@ mod program_exec {
 				assert_eq!(
 					eval("41"),
 					eval("42 dec!")
+				)
+			}
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("0,1,2"),
+					eval("1,2,3 dec!")
 				)
 			}
 		}
@@ -1914,6 +1944,13 @@ mod program_exec {
 					eval("42 inc")
 				)
 			}
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("1,2,3 2,3,4"),
+					eval("1,2,3 inc")
+				)
+			}
 		}
 		mod increase_x {
 			use super::*;
@@ -1922,6 +1959,13 @@ mod program_exec {
 				assert_eq!(
 					eval("43"),
 					eval("42 inc!")
+				)
+			}
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("2,3,4"),
+					eval("1,2,3 inc!")
 				)
 			}
 		}
