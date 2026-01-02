@@ -256,9 +256,12 @@ enum Token {
 	SliceIncludingToX,
 	Sort,
 	SortX,
-	// Split, // [1,2,3] -> 1 2 3
-	// SplitAtValue, // TODO
-	// SplitAtIndex, // TODO
+	Split, // 1,2,3 -> 1 2 3
+	SplitX,
+	// SplitAtIndex,
+	// SplitAtIndexX,
+	// SplitAtValue,
+	// SplitAtValueX,
 	// SplitAtFunction, // TODO?
 	// Sqrt, // TODO: for ints: ceil/floor?
 	Subtract,
@@ -393,6 +396,12 @@ impl From<&str> for Token {
 				"sliceinclto!" => SliceIncludingToX,
 				"sort" => Sort,
 				"sort!" => SortX,
+				"split" => Split,
+				"split!" => SplitX,
+				// "spliti" => SplitAtIndex,
+				// "spliti!" => SplitAtIndexX,
+				// "splitv" => SplitAtValue,
+				// "splitv!" => SplitAtValueX,
 				"sub" => Subtract,
 				"sub!" => SubtractX,
 				"sum" => Sum,
@@ -1679,6 +1688,32 @@ fn exec(program_stack: &mut ProgramStack, token: Token) {
 				_ => panic!()
 			}
 		}
+		Split => {
+			let v = program_stack.stack.last().unwrap();
+			match v {
+				ArrInt(v) => {
+					for el in v.clone() {
+						program_stack.stack.push(Int(el));
+					}
+				}
+				_ => panic!()
+			}
+		}
+		SplitX => {
+			let v = program_stack.stack.pop().unwrap();
+			match v {
+				ArrInt(v) => {
+					for el in v {
+						program_stack.stack.push(Int(el));
+					}
+				}
+				_ => panic!()
+			}
+		}
+		// SplitAtIndex => { unimplemented!() }
+		// SplitAtIndexX => { unimplemented!() }
+		// SplitAtValue => { unimplemented!() }
+		// SplitAtValueX => { unimplemented!() }
 		Subtract => {
 			let i = program_stack.stack.last().unwrap();
 			let v = &program_stack.stack[program_stack.stack.len()-2];
@@ -3580,6 +3615,66 @@ mod program_exec {
 				)
 			}
 		}
+		mod split {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("1,2,3 1 2 3"),
+					eval("1,2,3 split")
+				)
+			}
+		}
+		mod split_x {
+			use super::*;
+			#[test]
+			fn _1_2_3() {
+				assert_eq!(
+					eval("1 2 3"),
+					eval("1,2,3 split!")
+				)
+			}
+		}
+		// mod split_at_index {
+		// 	use super::*;
+		// 	#[test]
+		// 	fn _9_8_7_6() {
+		// 		assert_eq!(
+		// 			eval("9,8,7,6 1 9 ? 7,6"),
+		// 			eval("9,8,7,6 1 spliti")
+		// 		)
+		// 	}
+		// }
+		// mod split_at_index_x {
+		// 	use super::*;
+		// 	#[test]
+		// 	fn _9_8_7_6() {
+		// 		assert_eq!(
+		// 			eval("9 ? 7,6"),
+		// 			eval("9,8,7,6 1 spliti!")
+		// 		)
+		// 	}
+		// }
+		// mod split_at_value {
+		// 	use super::*;
+		// 	#[test]
+		// 	fn _9_8_7_6() {
+		// 		assert_eq!(
+		// 			eval("9,8,7,6 8 9 ? 7,6"),
+		// 			eval("9,8,7,6 8 splitv")
+		// 		)
+		// 	}
+		// }
+		// mod split_at_value_x {
+		// 	use super::*;
+		// 	#[test]
+		// 	fn _9_8_7_6() {
+		// 		assert_eq!(
+		// 			eval("9 ? 7,6"),
+		// 			eval("9,8,7,6 8 splitv!")
+		// 		)
+		// 	}
+		// }
 		mod subtract {
 			use super::*;
 			#[test]
