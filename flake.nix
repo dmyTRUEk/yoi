@@ -6,11 +6,6 @@
 		system = "x86_64-linux";
 		pkgs = import nixpkgs { inherit system; };
 	in {
-		devShells.${system}.default = pkgs.mkShell rec {
-			packages = with pkgs; [
-			];
-		};
-
 		packages.${system}.default = pkgs.rustPlatform.buildRustPackage {
 			pname = "yoi";
 			version = "0.0.0";
